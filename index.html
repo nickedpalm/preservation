@@ -997,9 +997,14 @@
         
         function setupPhotoButtons() {
             document.querySelectorAll('.photo-btn').forEach(function(btn) {
+                // Skip if already initialized
+                if (btn.hasAttribute('data-initialized')) return;
+                btn.setAttribute('data-initialized', 'true');
+                
                 const inputId = btn.getAttribute('data-input');
                 const input = document.getElementById(inputId);
-                if (input) {
+                if (input && !input.hasAttribute('data-initialized')) {
+                    input.setAttribute('data-initialized', 'true');
                     btn.addEventListener('click', function(e) {
                         e.preventDefault();
                         input.click();
