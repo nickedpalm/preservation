@@ -383,6 +383,17 @@
                 padding-left: 0 !important;
             }
             
+            /* Hide placeholder text in print */
+            textarea::placeholder, input::placeholder {
+                color: transparent !important;
+            }
+            
+            /* For empty textareas, show a minimum height so it's clear the field exists */
+            textarea:placeholder-shown {
+                min-height: 40px;
+                border-bottom: 1px solid #ccc !important;
+            }
+            
             /* Hide the auto-save warning box in print (first one only) */
             .container > p + .warning-box { display: none !important; }
             
