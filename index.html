@@ -1226,12 +1226,34 @@
                 roomSection.querySelector('.remove-section-btn').addEventListener('click', function() {
                     if (confirm('Remove this room?')) {
                         document.getElementById(roomId).remove();
+                        renumberRooms();
                         triggerAutoSave();
                     }
                 });
             }
             
             setupPhotoButtons();
+        }
+        
+        function renumberRooms() {
+            const rooms = document.querySelectorAll('.room-section');
+            roomCounter = rooms.length;
+            
+            rooms.forEach(function(room, index) {
+                const num = index + 1;
+                const header = room.querySelector('.section-header h2');
+                if (header) {
+                    header.textContent = `B.${num}: Room ${num}`;
+                }
+                
+                // Update remove button visibility (first room shouldn't have remove)
+                const removeBtn = room.querySelector('.remove-section-btn');
+                if (num === 1 && removeBtn) {
+                    removeBtn.style.display = 'none';
+                } else if (num > 1 && removeBtn) {
+                    removeBtn.style.display = '';
+                }
+            });
         }
         
         function addFacade() {
@@ -1377,12 +1399,34 @@
                 facadeSection.querySelector('.remove-section-btn').addEventListener('click', function() {
                     if (confirm('Remove this façade?')) {
                         document.getElementById(facadeId).remove();
+                        renumberFacades();
                         triggerAutoSave();
                     }
                 });
             }
             
             setupPhotoButtons();
+        }
+        
+        function renumberFacades() {
+            const facades = document.querySelectorAll('.facade-section');
+            facadeCounter = facades.length;
+            
+            facades.forEach(function(facade, index) {
+                const num = index + 1;
+                const header = facade.querySelector('.section-header h2');
+                if (header) {
+                    header.textContent = `C.${num}: Façade ${num}`;
+                }
+                
+                // Update remove button visibility (first facade shouldn't have remove)
+                const removeBtn = facade.querySelector('.remove-section-btn');
+                if (num === 1 && removeBtn) {
+                    removeBtn.style.display = 'none';
+                } else if (num > 1 && removeBtn) {
+                    removeBtn.style.display = '';
+                }
+            });
         }
     </script>
 </body>
