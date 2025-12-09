@@ -439,18 +439,9 @@
                 page-break-before: always;
             }
             
-            /* Keep Section A together - allow break only if absolutely necessary */
-            .section-a-container {
-                page-break-inside: avoid;
-            }
-            
             /* Prevent orphaned headers */
-            h2 {
+            h2, h3 {
                 page-break-after: avoid;
-            }
-            
-            .form-section {
-                page-break-inside: avoid;
             }
             
             /* Keep question and answer together - don't split across pages */
