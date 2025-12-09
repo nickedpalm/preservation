@@ -2,66 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heritage Property Conditions Assessment Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Heritage Property Conditions Assessment - Checklist 1.1</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
             color: #333;
             background: #f5f5f5;
-            padding: 20px;
-            counter-reset: page;
+            padding: 15px;
+            -webkit-font-smoothing: antialiased;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
-            padding: 40px;
+            padding: 30px 20px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
         }
         
-        /* Auto-save indicator */
+        /* Save indicator */
         .save-indicator {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             background: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
             z-index: 1000;
-            transition: all 0.3s;
+            font-size: 11px;
         }
         
-        .save-indicator.saving {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-        }
-        
-        .save-indicator.saved {
-            background: #d4edda;
-            border: 2px solid #28a745;
-        }
+        .save-indicator.saving { background: #fff3cd; border: 2px solid #ffc107; }
+        .save-indicator.saved { background: #d4edda; border: 2px solid #28a745; }
         
         .save-indicator .icon {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 11px;
         }
         
         .save-indicator.saving .icon {
@@ -73,129 +68,96 @@
         .save-indicator.saved .icon {
             background: #28a745;
             color: white;
-            font-weight: bold;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
         
-        .save-timestamp {
-            font-size: 11px;
-            color: #666;
-        }
-        
-        /* Page numbering */
-        .page-number {
-            position: fixed;
-            bottom: 20px;
-            right: 40px;
-            background: white;
-            padding: 5px 15px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            font-size: 12px;
-            color: #666;
-        }
-        
         h1 {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 28px;
+            margin-bottom: 8px;
+            font-size: 22px;
             text-transform: uppercase;
             border-bottom: 3px solid #3498db;
-            padding-bottom: 15px;
+            padding-bottom: 12px;
         }
         
         h2 {
             color: #2c3e50;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 17px;
             background: #ecf0f1;
-            padding: 10px 15px;
+            padding: 10px 12px;
             border-left: 4px solid #3498db;
         }
         
         h3 {
             color: #34495e;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 16px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 15px;
             font-weight: 600;
         }
         
         .form-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             page-break-inside: avoid;
         }
         
-        .room-section,
-        .facade-section,
-        .summary-section {
+        .room-section, .facade-section, .summary-section {
             page-break-before: always;
-            padding-top: 20px;
+            padding-top: 15px;
             border-top: 3px solid #3498db;
-            margin-top: 40px;
-            position: relative;
+            margin-top: 30px;
         }
         
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .section-number {
-            background: #3498db;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-weight: bold;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .remove-section-btn {
             background: #e74c3c;
             color: white;
             border: none;
-            padding: 8px 20px;
+            padding: 8px 16px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: 600;
-        }
-        
-        .remove-section-btn:hover {
-            background: #c0392b;
+            -webkit-appearance: none;
         }
         
         .add-section-btn {
             background: #27ae60;
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 14px 25px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: 600;
-            margin: 20px 0;
+            margin: 15px 0;
             width: 100%;
-            font-size: 16px;
-        }
-        
-        .add-section-btn:hover {
-            background: #229954;
+            font-size: 15px;
+            -webkit-appearance: none;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
         
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: #555;
+            font-size: 14px;
         }
         
         input[type="text"],
@@ -206,663 +168,505 @@
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            border-radius: 5px;
+            font-size: 16px;
             font-family: inherit;
+            -webkit-appearance: none;
         }
         
         textarea {
-            min-height: 80px;
+            min-height: 90px;
             resize: vertical;
         }
         
-        .checkbox-group,
-        .radio-group {
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .checkbox-group, .radio-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             margin-top: 8px;
         }
         
-        .checkbox-item,
-        .radio-item {
+        .checkbox-item, .radio-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            min-height: 40px;
         }
         
-        input[type="checkbox"],
-        input[type="radio"] {
-            width: 18px;
-            height: 18px;
+        input[type="checkbox"], input[type="radio"] {
+            width: 20px;
+            height: 20px;
             cursor: pointer;
         }
         
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
             gap: 15px;
         }
         
+        /* Photo upload */
         .photo-upload {
-            border: 2px dashed #3498db;
+            border: 3px dashed #3498db;
             border-radius: 8px;
-            padding: 20px;
+            padding: 18px;
             text-align: center;
             background: #f8f9fa;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .photo-upload:hover {
-            background: #e3f2fd;
-            border-color: #2980b9;
         }
         
         .photo-upload input[type="file"] {
             display: none;
         }
         
+        .photo-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            -webkit-appearance: none;
+            background: #3498db;
+            color: white;
+        }
+        
+        .photo-btn:active {
+            background: #2980b9;
+            transform: scale(0.98);
+        }
+        
         .photo-preview {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
         
         .photo-item {
             position: relative;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 8px;
             background: white;
             page-break-inside: avoid;
         }
         
         .photo-item img {
             width: 100%;
-            height: 150px;
-            object-fit: cover;
+            height: auto;
+            max-height: 350px;
+            object-fit: contain;
             border-radius: 4px;
             margin-bottom: 8px;
+            background: #f8f9fa;
         }
         
-        .photo-item input {
+        .photo-item input.caption-input {
             width: 100%;
-            padding: 5px;
-            font-size: 12px;
+            padding: 6px;
+            font-size: 13px;
             border: 1px solid #ddd;
-            border-radius: 3px;
+            border-radius: 4px;
         }
         
         .photo-item .caption-display {
-            display: none; /* Hidden on screen */
+            display: none;
         }
         
         .photo-item button {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 12px;
+            right: 12px;
             background: #e74c3c;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        .photo-item button:hover {
-            background: #c0392b;
+            font-size: 16px;
+            z-index: 10;
         }
         
         .buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 15px;
             border-top: 2px solid #ecf0f1;
             justify-content: center;
             flex-wrap: wrap;
         }
         
         button {
-            padding: 12px 30px;
-            font-size: 16px;
+            padding: 12px 20px;
+            font-size: 14px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
+            -webkit-appearance: none;
+            min-height: 44px;
         }
         
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-        
-        .btn-secondary {
-            background: #95a5a6;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #7f8c8d;
-        }
-        
-        .btn-success {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #229954;
-        }
-        
-        .btn-warning {
-            background: #f39c12;
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background: #e67e22;
-        }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-secondary { background: #95a5a6; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
         
         .info-box {
             background: #e8f4f8;
             border-left: 4px solid #3498db;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 12px;
+            margin-bottom: 15px;
             border-radius: 4px;
-        }
-        
-        .info-box p {
-            margin-bottom: 8px;
-        }
-        
-        .info-box strong {
-            color: #2c3e50;
+            font-size: 13px;
         }
         
         .warning-box {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 12px;
+            margin-bottom: 15px;
             border-radius: 4px;
             color: #856404;
-        }
-        
-        /* Help icon and tooltip */
-        .help-icon {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            background: #3498db;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 18px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: help;
-            margin-left: 5px;
-            position: relative;
-        }
-        
-        .help-icon:hover {
-            background: #2980b9;
-        }
-        
-        .tooltip {
-            visibility: hidden;
-            position: absolute;
-            z-index: 1000;
-            background: #2c3e50;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
             font-size: 13px;
-            font-weight: normal;
-            width: 250px;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
-        .tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #2c3e50 transparent transparent transparent;
-        }
-        
-        .help-icon:hover .tooltip {
-            visibility: visible;
-        }
-        
-        .next-step {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 12px 15px;
-            margin-top: 10px;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #856404;
-        }
-        
-        .next-step strong {
-            color: #856404;
-        }
-        
-        /* Draft watermark for incomplete PDFs */
-        .draft-watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 120px;
-            color: rgba(231, 76, 60, 0.1);
-            font-weight: bold;
-            pointer-events: none;
-            z-index: -1;
-            display: none;
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            margin-top: 4px;
         }
         
         /* Print styles */
         @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 20px; max-width: 100%; }
+            .buttons, .photo-upload, .photo-item button, .remove-section-btn, .add-section-btn, .save-indicator { display: none !important; }
+            .photo-preview { columns: 2; column-gap: 15px; }
+            .photo-item { margin-bottom: 15px; display: inline-block; width: 100%; }
+            .photo-item img { max-height: none; }
             
-            .container {
-                box-shadow: none;
-                padding: 40px 20px;
-            }
-            
-            .buttons,
-            .photo-upload,
-            .photo-item button,
-            .remove-section-btn,
-            .add-section-btn,
-            .page-number,
-            .help-icon,
-            .tooltip,
-            .save-indicator {
-                display: none !important;
-            }
-            
-            .room-section,
-            .facade-section {
-                page-break-before: always;
-            }
-            
-            .form-section {
-                page-break-inside: avoid;
-            }
-            
-            h2 {
-                page-break-after: avoid;
-            }
-            
-            input[type="text"],
-            input[type="date"],
-            textarea,
-            select {
-                border: none;
-                border-bottom: 1px solid #333;
-                padding: 2px 5px;
-            }
-            
-            .photo-item {
-                page-break-inside: avoid;
-            }
-            
-            /* Show full caption text in print */
-            .photo-item .caption-input {
+            /* Show full captions in print */
+            .photo-item input.caption-input {
                 display: none !important;
             }
             
             .photo-item .caption-display {
                 display: block !important;
-                font-size: 11px;
+                font-size: 12px;
                 color: #333;
-                padding: 4px 0;
+                padding: 6px 0;
                 word-wrap: break-word;
                 white-space: normal;
                 line-height: 1.4;
             }
             
-            /* Alternative: use a caption display element for print */
-            .photo-caption-print {
-                display: block !important;
-                font-size: 11px;
-                color: #333;
-                padding: 4px 0;
-                word-wrap: break-word;
-            }
-            
-            .draft-watermark.show {
-                display: block !important;
-            }
-            
-            /* Page numbers for print */
-            @page {
-                margin: 1in;
-                @bottom-right {
-                    content: "Page " counter(page);
-                }
-            }
-            
-            body {
-                counter-increment: page;
-            }
+            @page { margin: 0.6in; size: letter; }
         }
         
+        /* Mobile */
         @media screen and (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            .grid-2,
-            .grid-3 {
-                grid-template-columns: 1fr;
-            }
-            
-            .checkbox-group,
-            .radio-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .tooltip {
-                width: 200px;
-            }
-            
-            .save-indicator {
-                top: 10px;
-                right: 10px;
-                font-size: 12px;
-                padding: 8px 15px;
-            }
+            body { padding: 8px; }
+            .container { padding: 15px 12px; }
+            h1 { font-size: 18px; }
+            h2 { font-size: 15px; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .photo-preview { grid-template-columns: 1fr; }
+            .buttons { flex-direction: column; }
+            .buttons button { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="draft-watermark">DRAFT</div>
-    
     <div class="save-indicator saved">
-        <div class="icon">âœ“</div>
+        <div class="icon">✓</div>
         <div>
-            <div style="font-size: 13px; font-weight: 600;">Auto-saved</div>
-            <div class="save-timestamp">Just now</div>
+            <div style="font-weight: 600;">Saved</div>
         </div>
     </div>
-    
-    <div class="page-number">Page <span id="currentPage">1</span></div>
     
     <div class="container">
         <h1>Checklist 1: Conditions Assessment</h1>
-        <p style="text-align: center; color: #7f8c8d; margin-bottom: 10px;">Heritage Property Conditions Assessment Form</p>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 8px; font-size: 13px;">Heritage Property Conditions Assessment Form</p>
         
-        <div class="warning-box" style="text-align: center; margin-bottom: 30px;">
-            <strong>&#9889; Auto-Save Enabled:</strong> Your progress is automatically saved as you type. Check the indicator in the top-right corner.<br>
-            <strong>&#128247; Camera Ready:</strong> On mobile devices, click photo upload buttons to take pictures directly with your camera!
+        <div class="warning-box" style="text-align: center;">
+            <strong>⚡ Auto-Save:</strong> Progress saved automatically<br>
+            <strong>📱 iPhone Ready:</strong> Download this file and open in Safari for full PDF functionality
         </div>
         
-        <!-- Rest of the form content will be added via JavaScript to keep this manageable -->
-        <div id="formContent"></div>
+        <!-- SECTION A: Property Information & Initial Steps -->
+        <h2>Section A: Property Information & Initial Steps</h2>
         
-        <!-- Buttons -->
-        <div class="buttons no-print">
-            <button type="button" class="btn-warning" onclick="saveDraftPDF()">&#128190; Save Draft PDF</button>
-            <button type="button" class="btn-success" onclick="exportData()">&#128228; Export Data</button>
-            <button type="button" class="btn-secondary" onclick="importData()">&#128229; Import Data</button>
-            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
-            <button type="button" class="btn-secondary" onclick="clearForm()">&#128465; Clear Form</button>
-            <button type="button" class="btn-primary" onclick="saveFinalPDF()">&#128196; Save Final PDF</button>
+        <div class="form-section">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="propertyName">Property Name: *</label>
+                    <input type="text" id="propertyName" placeholder="Enter property name">
+                </div>
+                <div class="form-group">
+                    <label for="rpaNumber">RPA Number:</label>
+                    <input type="text" id="rpaNumber" placeholder="Enter RPA number">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="propertyAddress">Property Address:</label>
+                <textarea id="propertyAddress" placeholder="Full address including postal code" style="min-height: 60px;"></textarea>
+            </div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="assessmentDate">Assessment Date: *</label>
+                    <input type="date" id="assessmentDate">
+                </div>
+                <div class="form-group">
+                    <label for="assessor">Assessor Name & Role: *</label>
+                    <input type="text" id="assessor" placeholder="Name and role">
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="weather">Weather Conditions:</label>
+                    <select id="weather">
+                        <option value="">Select weather</option>
+                        <option value="sunny">☀️ Sunny</option>
+                        <option value="cloudy">☁️ Cloudy</option>
+                        <option value="rainy">🌧️ Rainy</option>
+                        <option value="snowy">❄️ Snowy</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="temperature">Temperature:</label>
+                    <input type="text" id="temperature" placeholder="e.g., 72°F / 22°C">
+                </div>
+            </div>
         </div>
+        
+        <!-- Heritage Status Questions -->
+        <div class="form-section">
+            <h3>1. Heritage Status</h3>
+            <div class="info-box">
+                Check OBO List of Significant Properties at: <br>
+                <a href="https://usdos.sharepoint.com/sites/OBO-CH/SitePages/Historic-Facilities-Maintenance.aspx" target="_blank" style="word-break: break-all;">usdos.sharepoint.com/sites/OBO-CH</a>
+            </div>
+            
+            <div class="form-group">
+                <label>Does the property appear in the OBO List of Significant Properties?</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="oboYes" name="oboList" value="yes">
+                        <label for="oboYes">Yes</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="oboNo" name="oboList" value="no">
+                        <label for="oboNo">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Listing Authority (if applicable):</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="secState" name="authority">
+                        <label for="secState">Secretary of State</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="unesco" name="authority">
+                        <label for="unesco">UNESCO/World Heritage</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hostCountry" name="authority">
+                        <label for="hostCountry">Host Country</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="local" name="authority">
+                        <label for="local">Local Authority</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Available Documentation:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="css" name="docs">
+                        <label for="css">Cultural Significance Study (CSS)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hsr" name="docs">
+                        <label for="hsr">Historic Structure Report (HSR)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="clr" name="docs">
+                        <label for="clr">Cultural Landscape Report (CLR)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="sectionANotes">Background Information & Notes:</label>
+                <textarea id="sectionANotes" placeholder="Enter background information, significance, special considerations, references to CSS/HSR, etc."></textarea>
+            </div>
+        </div>
+        
+        <!-- SECTION B: Interior Assessment -->
+        <h2>Section B: Interior Assessment</h2>
+        <div id="roomsContainer"></div>
+        <button class="add-section-btn" onclick="addRoom()">➕ Add Another Room</button>
+        
+        <!-- SECTION C: Façade Assessment -->
+        <h2>Section C: Façade Assessment</h2>
+        <div id="facadesContainer"></div>
+        <button class="add-section-btn" onclick="addFacade()">➕ Add Another Façade</button>
+        
+        <!-- SECTION D: Water Damage Reporting -->
+        <h2>Section D: Water Damage Reporting</h2>
+        <div class="form-section">
+            <div class="warning-box">
+                <strong>⚠️ IMPORTANT:</strong> Report any new signs of water damage immediately to prevent further deterioration.
+            </div>
+            
+            <div class="form-group">
+                <label>Signs of Active Water Damage Observed?</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="waterYes" name="waterDamage" value="yes">
+                        <label for="waterYes">Yes - Immediate Action Required</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="waterNo" name="waterDamage" value="no">
+                        <label for="waterNo">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="waterLocation">Location & Description of Water Damage:</label>
+                <textarea id="waterLocation" placeholder="Describe exact location, affected rooms/elements, source if known, extent of damage"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>📷 Water Damage Photos:</label>
+                <div class="photo-upload">
+                    <input type="file" id="waterPhotos" accept="image/*" multiple data-preview="waterPreview">
+                    <button type="button" class="photo-btn" data-input="waterPhotos">📷 Add Photos</button>
+                </div>
+                <div id="waterPreview" class="photo-preview"></div>
+            </div>
+        </div>
+        
+        <!-- SECTION E: Assessment Summary -->
+        <div class="summary-section">
+            <h2>Section E: Assessment Summary</h2>
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="overallFindings">Overall Findings:</label>
+                    <textarea id="overallFindings" placeholder="Summarize overall condition, key observations, most significant issues" style="min-height: 100px;"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="recommendations">Recommended Actions & Priorities:</label>
+                    <textarea id="recommendations" placeholder="List recommended maintenance, repairs, or treatments in priority order" style="min-height: 100px;"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="urgentItems">Urgent/Critical Items:</label>
+                    <textarea id="urgentItems" placeholder="Items requiring immediate attention"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="followUp">Follow-Up Required:</label>
+                    <textarea id="followUp" placeholder="Areas requiring further investigation, specialist consultation, or monitoring"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="specialistNeeded">Specialist Assistance Needed:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="heritageArch" name="specialist">
+                            <label for="heritageArch">Heritage Architect</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="structEng" name="specialist">
+                            <label for="structEng">Structural Engineer</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="conservator" name="specialist">
+                            <label for="conservator">Conservator</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="masonrySpec" name="specialist">
+                            <label for="masonrySpec">Masonry Specialist</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="roofSpec" name="specialist">
+                            <label for="roofSpec">Roofing Specialist</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="buttons">
+            <button class="btn-success" onclick="exportData()">💾 Export Data</button>
+            <button class="btn-secondary" onclick="importData()">📥 Import Data</button>
+            <button class="btn-warning" onclick="window.print()">📄 Save as PDF</button>
+            <button class="btn-danger" onclick="clearForm()">🗑️ Clear Form</button>
+        </div>
+        
+        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
     </div>
-    
+
     <script>
         let roomCounter = 0;
         let facadeCounter = 0;
         let autoSaveTimeout;
-        let lastSaveTime = null;
+        let lastSaveTime = new Date();
         
-        // Initialize form
-        window.addEventListener('DOMContentLoaded', function() {
-            loadFormStructure();
-            loadSavedData();
-            setupAutoSave();
-            updateSaveIndicator();
-        });
-        
-        // Load the form HTML structure
-        function loadFormStructure() {
-            const formHTML = `
-                <!-- Basic Information -->
-                <div class="form-section">
-                    <h2>Basic Property Information</h2>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label for="propertyName">Property Name:</label>
-                            <input type="text" id="propertyName" placeholder="Enter property name">
-                        </div>
-                        <div class="form-group">
-                            <label for="rpaNumber">RPA Number:</label>
-                            <input type="text" id="rpaNumber" placeholder="Enter RPA number">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="propertyAddress">Property Address:</label>
-                        <input type="text" id="propertyAddress" placeholder="Enter full property address">
-                    </div>
-                    
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label for="assessmentDate">Assessment Date:</label>
-                            <input type="date" id="assessmentDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="assessorName">Assessor Name & Role:</label>
-                            <input type="text" id="assessorName" placeholder="Enter name and role">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Section A content here - keeping it shorter for code manageability -->
-                <div class="form-section">
-                    <h2>Section A: Initial Steps - Background Information</h2>
-                    <div class="info-box">
-                        <p><strong>Tip:</strong> You can skip questions that don't apply and come back to them later. Your progress is saved automatically.</p>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>
-                            1. Does the property appear in the OBO List of Significant Properties?
-                            <span class="help-icon">?
-                                <span class="tooltip">Check at: https://usdos.sharepoint.com/sites/OBO-CH/SitePages/Historic-Facilities-Maintenance.aspx</span>
-                            </span>
-                        </label>
-                        <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" id="oboYes" name="oboList" value="yes" onchange="showNextStep('oboYesStep')">
-                                <label for="oboYes">Yes</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="oboNo" name="oboList" value="no" onchange="showNextStep('oboNoStep')">
-                                <label for="oboNo">No</label>
-                            </div>
-                        </div>
-                        <div id="oboYesStep" class="next-step" style="display: none;">
-                            <strong>Next:</strong> Continue to question 2 below to identify the listing authority.
-                        </div>
-                        <div id="oboNoStep" class="next-step" style="display: none;">
-                            <strong>Next:</strong> Use standard OBO FWP formats and procedures. You may skip to Room or Façade assessments below.
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="sectionANotes">Section A Notes:</label>
-                        <textarea id="sectionANotes" placeholder="Enter any background information, HSR references, or special considerations"></textarea>
-                    </div>
-                </div>
-                
-                <!-- Rooms Container -->
-                <div id="roomsContainer"></div>
-                <button type="button" class="add-section-btn" onclick="addRoom()">+ Add Another Room</button>
-                
-                <!-- Facades Container -->
-                <div id="facadesContainer"></div>
-                <button type="button" class="add-section-btn" onclick="addFacade()">+ Add Another Façade</button>
-                
-                <!-- Water Damage Section -->
-                <div class="form-section">
-                    <h2>Section D: Water Damage Reporting</h2>
-                    <div class="info-box">
-                        <p><strong>IMPORTANT:</strong> Report any new signs of water damage immediately.</p>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Signs of Active Water Damage Observed?</label>
-                        <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" id="waterYes" name="waterDamageActive" value="yes">
-                                <label for="waterYes">Yes - Immediate Action Required</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="waterNo" name="waterDamageActive" value="no">
-                                <label for="waterNo">No</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="waterLocation">Location of Water Damage:</label>
-                        <textarea id="waterLocation" placeholder="Describe exact location, room, and affected elements"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Water Damage Photos:</label>
-                        <div class="photo-upload" onclick="document.getElementById('waterPhotos').click()">
-                            <input type="file" id="waterPhotos" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload(event, 'waterPreview')">
-                            <p>📷 Take Photo / Upload Photos</p>
-                        </div>
-                        <div id="waterPreview" class="photo-preview"></div>
-                    </div>
-                </div>
-                
-                <!-- Summary Section -->
-                <div class="form-section summary-section">
-                    <h2>Section E: Assessment Summary</h2>
-                    
-                    <div class="form-group">
-                        <label for="overallFindings">Overall Findings:</label>
-                        <textarea id="overallFindings" placeholder="Summarize the overall condition and key findings" style="min-height: 120px;"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="recommendations">Recommended Actions:</label>
-                        <textarea id="recommendations" placeholder="List priority actions and recommendations" style="min-height: 120px;"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="followUp">Follow-Up Required:</label>
-                        <textarea id="followUp" placeholder="Note areas requiring further investigation"></textarea>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('formContent').innerHTML = formHTML;
-            
-            // Initialize with one room and one facade
+        window.addEventListener('load', function() {
+            loadFormData();
             addRoom();
             addFacade();
-        }
+            document.getElementById('assessmentDate').value = new Date().toISOString().split('T')[0];
+            setupPhotoButtons();
+        });
         
-        // Setup auto-save on all inputs
-        function setupAutoSave() {
-            document.addEventListener('input', function(e) {
-                if (e.target.matches('input, textarea, select')) {
-                    triggerAutoSave();
-                }
-            });
-            
-            document.addEventListener('change', function(e) {
-                if (e.target.matches('input[type="radio"], input[type="checkbox"], input[type="file"]')) {
-                    triggerAutoSave();
-                }
-            });
-        }
+        document.addEventListener('input', triggerAutoSave);
+        document.addEventListener('change', triggerAutoSave);
         
-        // Trigger auto-save with debouncing
         function triggerAutoSave() {
-            // Show saving indicator
             const indicator = document.querySelector('.save-indicator');
             indicator.className = 'save-indicator saving';
             indicator.querySelector('div div').textContent = 'Saving...';
-            indicator.querySelector('.icon').textContent = '';
-            
-            // Clear existing timeout
             clearTimeout(autoSaveTimeout);
-            
-            // Set new timeout to save after 1 second of no changes
             autoSaveTimeout = setTimeout(function() {
                 saveFormData();
                 indicator.className = 'save-indicator saved';
-                indicator.querySelector('div div').textContent = 'Auto-saved';
-                indicator.querySelector('.icon').textContent = 'âœ“';
-                updateSaveIndicator();
+                indicator.querySelector('div div').textContent = 'Saved';
+                lastSaveTime = new Date();
             }, 1000);
         }
         
-        // Update save timestamp
-        function updateSaveIndicator() {
-            if (!lastSaveTime) {
-                lastSaveTime = new Date();
-            }
-            
-            const now = new Date();
-            const diff = Math.floor((now - lastSaveTime) / 1000);
-            
-            let timeText;
-            if (diff < 60) {
-                timeText = 'Just now';
-            } else if (diff < 3600) {
-                const mins = Math.floor(diff / 60);
-                timeText = `${mins} min${mins > 1 ? 's' : ''} ago`;
-            } else {
-                const hours = Math.floor(diff / 3600);
-                timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-            }
-            
-            document.querySelector('.save-timestamp').textContent = timeText;
-            
-            // Update every minute
-            setTimeout(updateSaveIndicator, 60000);
-        }
-        
-        // Save form data to localStorage
         function saveFormData() {
             const formData = {
                 roomCount: roomCounter,
@@ -871,139 +675,86 @@
                 data: {}
             };
             
-            // Save all form inputs
-            document.querySelectorAll('input, select, textarea').forEach(input => {
-                if (input.type === 'checkbox') {
-                    if (!formData.data.checkboxes) formData.data.checkboxes = {};
-                    formData.data.checkboxes[input.id || input.name] = input.checked;
-                } else if (input.type === 'radio') {
-                    if (input.checked) {
-                        formData.data[input.name] = input.value;
+            document.querySelectorAll('input, textarea, select').forEach(function(el) {
+                if (el.id && el.type !== 'file') {
+                    if (el.type === 'checkbox' || el.type === 'radio') {
+                        formData.data[el.id] = el.checked;
+                    } else {
+                        formData.data[el.id] = el.value;
                     }
-                } else if (input.type !== 'file') {
-                    formData.data[input.id] = input.value;
                 }
             });
             
-            // Save photos
-            formData.photos = {};
-            document.querySelectorAll('.photo-preview').forEach(preview => {
-                const photos = [];
-                preview.querySelectorAll('.photo-item').forEach(item => {
-                    const img = item.querySelector('img');
-                    const caption = item.querySelector('input').value;
-                    photos.push({ src: img.src, caption: caption });
-                });
-                if (photos.length > 0) {
-                    formData.photos[preview.id] = photos;
+            document.querySelectorAll('.photo-item').forEach(function(item, index) {
+                const img = item.querySelector('img');
+                const caption = item.querySelector('input.caption-input');
+                const previewId = item.closest('.photo-preview').id;
+                if (img && caption) {
+                    formData.data[previewId + '_photo_' + index + '_src'] = img.src;
+                    formData.data[previewId + '_photo_' + index + '_caption'] = caption.value;
                 }
             });
             
             localStorage.setItem('assessmentForm', JSON.stringify(formData));
-            lastSaveTime = new Date();
         }
         
-        // Load saved data
-        function loadSavedData() {
+        function loadFormData() {
             const saved = localStorage.getItem('assessmentForm');
             if (!saved) return;
             
-            const formData = JSON.parse(saved);
-            
-            // Recreate rooms and facades
-            for (let i = 0; i < formData.roomCount; i++) {
-                if (i > 0) addRoom(); // First one already added
-            }
-            for (let i = 0; i < formData.facadeCount; i++) {
-                if (i > 0) addFacade(); // First one already added
-            }
-            
-            // Restore data
             setTimeout(function() {
-                Object.keys(formData.data).forEach(key => {
-                    if (key === 'checkboxes') {
-                        Object.keys(formData.data.checkboxes).forEach(id => {
-                            const input = document.getElementById(id) || document.querySelector(`[name="${id}"]`);
-                            if (input) input.checked = formData.data.checkboxes[id];
-                        });
-                    } else {
-                        const input = document.getElementById(key);
-                        if (input) input.value = formData.data[key];
-                        
-                        const radios = document.getElementsByName(key);
-                        radios.forEach(radio => {
-                            if (radio.value === formData.data[key]) {
-                                radio.checked = true;
-                            }
-                        });
+                const formData = JSON.parse(saved);
+                roomCounter = formData.roomCount || 0;
+                facadeCounter = formData.facadeCount || 0;
+                
+                Object.keys(formData.data).forEach(function(key) {
+                    const el = document.getElementById(key);
+                    if (el) {
+                        if (el.type === 'checkbox' || el.type === 'radio') {
+                            el.checked = formData.data[key];
+                        } else {
+                            el.value = formData.data[key];
+                        }
                     }
                 });
                 
-                // Restore photos
-                if (formData.photos) {
-                    Object.keys(formData.photos).forEach(previewId => {
+                Object.keys(formData.data).forEach(function(key) {
+                    if (key.endsWith('_src')) {
+                        const photoId = key.replace('_src', '');
+                        const previewId = photoId.substring(0, photoId.lastIndexOf('_photo_'));
                         const preview = document.getElementById(previewId);
                         if (preview) {
-                            preview.innerHTML = '';
-                            formData.photos[previewId].forEach(photo => {
-                                const photoItem = document.createElement('div');
-                                photoItem.className = 'photo-item';
-                                photoItem.innerHTML = `
-                                    <button onclick="this.parentElement.remove(); triggerAutoSave();">×</button>
-                                    <img src="${photo.src}" alt="Photo">
-                                    <input type="text" class="caption-input" placeholder="Caption..." value="${photo.caption}" oninput="updateCaption(this); triggerAutoSave()">
-                                    <div class="caption-display">${photo.caption}</div>
-                                `;
-                                preview.appendChild(photoItem);
-                            });
+                            addPhotoDirectly(formData.data[key], preview, formData.data[photoId + '_caption'] || '');
                         }
-                    });
-                }
-                
-                if (formData.timestamp) {
-                    lastSaveTime = new Date(formData.timestamp);
-                    updateSaveIndicator();
-                }
+                    }
+                });
             }, 100);
         }
         
-        // Export data as JSON file
         function exportData() {
-            saveFormData(); // Ensure latest data is saved
+            saveFormData();
             const data = localStorage.getItem('assessmentForm');
             if (!data) {
-                alert('No data to export. Please fill out some fields first.');
+                alert('No data to export.');
                 return;
             }
             
-            try {
-                const blob = new Blob([data], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                
-                const propertyName = document.getElementById('propertyName')?.value || 'Assessment';
-                const date = new Date().toISOString().split('T')[0];
-                const safeName = propertyName.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-                a.download = `${safeName}_Data_${date}.json`;
-                
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                alert('✅ Data exported successfully!\n\nFile saved as: ' + a.download + '\n\nYou can:\n• Share this file with team members\n• Use it as a backup\n• Import it on another device');
-            } catch (error) {
-                alert('Error exporting data: ' + error.message);
-                console.error(error);
-            }
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const propertyName = document.getElementById('propertyName')?.value || 'Assessment';
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `${propertyName.replace(/[^a-z0-9]/gi, '_')}_${date}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('✅ Data exported successfully!');
         }
         
-        // Import data
         function importData() {
-            if (!confirm('Import data from a file?\n\nThis will replace your current form data. Make sure you\'ve exported your current work first if you want to keep it.')) {
-                return;
-            }
+            if (!confirm('Import data? This will replace current form data.')) return;
             document.getElementById('importFile').click();
         }
         
@@ -1014,186 +765,261 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    // Validate JSON
                     const data = JSON.parse(e.target.result);
-                    
-                    // Check if it has expected structure
-                    if (!data.data || !data.roomCount === undefined) {
-                        throw new Error('Invalid assessment data file');
-                    }
-                    
-                    // Save to localStorage
+                    if (!data.data) throw new Error('Invalid file');
                     localStorage.setItem('assessmentForm', e.target.result);
-                    
-                    alert('✅ Data imported successfully!\n\nThe form will now reload with the imported data.');
-                    
-                    // Reload page after short delay
-                    setTimeout(function() {
-                        location.reload();
-                    }, 500);
-                    
+                    alert('✅ Data imported! Reloading...');
+                    setTimeout(function() { location.reload(); }, 500);
                 } catch (error) {
-                    alert('âŒ Error importing data:\n\n' + error.message + '\n\nPlease make sure you selected a valid assessment data file (.json).');
-                    console.error('Import error:', error);
+                    alert('❌ Error: ' + error.message);
                 }
             };
-            
-            reader.onerror = function() {
-                alert('âŒ Error reading file. Please try again.');
-            };
-            
             reader.readAsText(file);
-            
-            // Reset file input
             event.target.value = '';
         }
         
-        // Save draft PDF
-        function saveDraftPDF() {
-            document.querySelector('.draft-watermark').classList.add('show');
-            setTimeout(function() {
-                window.print();
-                document.querySelector('.draft-watermark').classList.remove('show');
-            }, 100);
-        }
-        
-        // Save final PDF
-        function saveFinalPDF() {
-            if (confirm('This will create a final PDF without the DRAFT watermark. Is the assessment complete?')) {
-                window.print();
-            }
-        }
-        
-        // Clear form
         function clearForm() {
-            if (confirm('Are you sure you want to clear all data? This cannot be undone. Consider exporting your data first.')) {
+            if (confirm('Clear all data? This cannot be undone.')) {
                 localStorage.removeItem('assessmentForm');
                 location.reload();
             }
         }
         
-        // Show/hide next steps
-        function showNextStep(stepId) {
-            const parent = document.getElementById(stepId).parentElement;
-            parent.querySelectorAll('.next-step').forEach(s => s.style.display = 'none');
-            document.getElementById(stepId).style.display = 'block';
+        function setupPhotoButtons() {
+            document.querySelectorAll('.photo-btn').forEach(function(btn) {
+                const inputId = btn.getAttribute('data-input');
+                const input = document.getElementById(inputId);
+                if (input) {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        input.click();
+                    });
+                    input.addEventListener('change', function(e) {
+                        const previewId = this.getAttribute('data-preview');
+                        handlePhotoUpload(e, previewId);
+                    });
+                }
+            });
+        }
+        
+        function handlePhotoUpload(event, previewId) {
+            const files = event.target.files;
+            const preview = document.getElementById(previewId);
+            if (!files || !preview) return;
+            
+            Array.from(files).forEach(function(file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = new Image();
+                        img.onload = function() {
+                            try {
+                                const canvas = document.createElement('canvas');
+                                const ctx = canvas.getContext('2d');
+                                let width = img.width;
+                                let height = img.height;
+                                const maxSize = 2000;
+                                
+                                if (width > maxSize || height > maxSize) {
+                                    if (width > height) {
+                                        height = (height / width) * maxSize;
+                                        width = maxSize;
+                                    } else {
+                                        width = (width / height) * maxSize;
+                                        height = maxSize;
+                                    }
+                                }
+                                
+                                canvas.width = width;
+                                canvas.height = height;
+                                ctx.drawImage(img, 0, 0, width, height);
+                                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                                addPhotoDirectly(dataUrl, preview, '');
+                            } catch (err) {
+                                addPhotoDirectly(e.target.result, preview, '');
+                            }
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            setTimeout(function() { event.target.value = ''; }, 100);
+        }
+        
+        function addPhotoDirectly(imageSrc, preview, caption) {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item';
+            photoItem.innerHTML = `
+                <button onclick="removePhoto(this)">×</button>
+                <img src="${imageSrc}" alt="Photo">
+                <input type="text" class="caption-input" placeholder="Add caption..." value="${caption}" oninput="updateCaption(this); triggerAutoSave()">
+                <div class="caption-display">${caption}</div>
+            `;
+            preview.appendChild(photoItem);
             triggerAutoSave();
         }
         
-        // Add room (simplified for code length)
+        function updateCaption(input) {
+            const display = input.parentElement.querySelector('.caption-display');
+            if (display) {
+                display.textContent = input.value;
+            }
+        }
+        
+        function removePhoto(button) {
+            if (button && button.parentElement) {
+                button.parentElement.remove();
+                triggerAutoSave();
+            }
+        }
+        
         function addRoom() {
             roomCounter++;
             const roomId = `room${roomCounter}`;
             const container = document.getElementById('roomsContainer');
+            const removeBtn = roomCounter > 1 ? `<button class="remove-section-btn" data-section="${roomId}">Remove</button>` : '';
             
             const roomSection = document.createElement('div');
             roomSection.className = 'room-section';
             roomSection.id = roomId;
             roomSection.innerHTML = `
                 <div class="section-header">
-                    <h2>Section B.${roomCounter}: Interior Assessment - Room ${roomCounter}</h2>
-                    ${roomCounter > 1 ? '<button class="remove-section-btn" onclick="removeSection(\'' + roomId + '\')">Remove</button>' : ''}
+                    <h2>B.${roomCounter}: Room ${roomCounter}</h2>
+                    ${removeBtn}
                 </div>
                 <div class="form-group">
-                    <label for="${roomId}_name">Room Name:</label>
-                    <input type="text" id="${roomId}_name" placeholder="e.g., Main Hall">
+                    <label for="${roomId}_name">Room Name/Number: *</label>
+                    <input type="text" id="${roomId}_name" placeholder="e.g., Main Hall, Kitchen, Room 201">
                 </div>
                 <div class="form-group">
-                    <label for="${roomId}_notes">Room Notes:</label>
-                    <textarea id="${roomId}_notes" placeholder="Assessment notes"></textarea>
+                    <label>Preservation Zone:</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="${roomId}_pres" name="${roomId}_zone" value="preservation">
+                            <label for="${roomId}_pres">Preservation</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="${roomId}_rest" name="${roomId}_zone" value="restoration">
+                            <label for="${roomId}_rest">Restoration</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="${roomId}_adapt" name="${roomId}_zone" value="adaptive">
+                            <label for="${roomId}_adapt">Adaptive Reuse</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Photos:</label>
-                    <div class="photo-upload" onclick="document.getElementById('${roomId}_photos').click()">
-                        <input type="file" id="${roomId}_photos" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload(event, '${roomId}_preview')">
-                            <p>📷 Take Photo / Upload Photos</p>
+                    <label for="${roomId}_condition">Overall Condition:</label>
+                    <select id="${roomId}_condition">
+                        <option value="">Select condition</option>
+                        <option value="good">Good</option>
+                        <option value="fair">Fair</option>
+                        <option value="poor">Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="${roomId}_notes">Condition Notes & Deficiencies:</label>
+                    <textarea id="${roomId}_notes" placeholder="Describe condition of: walls, floors, ceiling, windows, doors, fixtures, finishes, decorative elements. Note any deficiencies, causes if known, and recommended treatments."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>📷 Room Photos:</label>
+                    <div class="photo-upload">
+                        <input type="file" id="${roomId}_photos" accept="image/*" multiple data-preview="${roomId}_preview">
+                        <button type="button" class="photo-btn" data-input="${roomId}_photos">📷 Add Photos</button>
                     </div>
                     <div id="${roomId}_preview" class="photo-preview"></div>
                 </div>
             `;
             container.appendChild(roomSection);
+            
+            if (roomCounter > 1) {
+                roomSection.querySelector('.remove-section-btn').addEventListener('click', function() {
+                    if (confirm('Remove this room?')) {
+                        document.getElementById(roomId).remove();
+                        triggerAutoSave();
+                    }
+                });
+            }
+            
+            setupPhotoButtons();
         }
         
-        // Add facade
         function addFacade() {
             facadeCounter++;
             const facadeId = `facade${facadeCounter}`;
             const container = document.getElementById('facadesContainer');
+            const removeBtn = facadeCounter > 1 ? `<button class="remove-section-btn" data-section="${facadeId}">Remove</button>` : '';
             
             const facadeSection = document.createElement('div');
             facadeSection.className = 'facade-section';
             facadeSection.id = facadeId;
             facadeSection.innerHTML = `
                 <div class="section-header">
-                    <h2>Section C.${facadeCounter}: Façade Assessment - Façade ${facadeCounter}</h2>
-                    ${facadeCounter > 1 ? '<button class="remove-section-btn" onclick="removeSection(\'' + facadeId + '\')">Remove</button>' : ''}
+                    <h2>C.${facadeCounter}: Façade ${facadeCounter}</h2>
+                    ${removeBtn}
                 </div>
                 <div class="form-group">
-                    <label for="${facadeId}_facing">Facing:</label>
+                    <label for="${facadeId}_facing">Facing Direction:</label>
                     <select id="${facadeId}_facing">
-                        <option value="">Select</option>
+                        <option value="">Select direction</option>
                         <option value="north">North</option>
                         <option value="south">South</option>
                         <option value="east">East</option>
                         <option value="west">West</option>
+                        <option value="northeast">Northeast</option>
+                        <option value="northwest">Northwest</option>
+                        <option value="southeast">Southeast</option>
+                        <option value="southwest">Southwest</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="${facadeId}_notes">Façade Notes:</label>
-                    <textarea id="${facadeId}_notes" placeholder="Assessment notes"></textarea>
+                    <label>Preservation Zone:</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="${facadeId}_pres" name="${facadeId}_zone" value="preservation">
+                            <label for="${facadeId}_pres">Preservation</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="${facadeId}_rest" name="${facadeId}_zone" value="restoration">
+                            <label for="${facadeId}_rest">Restoration</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Photos:</label>
-                    <div class="photo-upload" onclick="document.getElementById('${facadeId}_photos').click()">
-                        <input type="file" id="${facadeId}_photos" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload(event, '${facadeId}_preview')">
-                            <p>📷 Take Photo / Upload Photos</p>
+                    <label for="${facadeId}_condition">Overall Condition:</label>
+                    <select id="${facadeId}_condition">
+                        <option value="">Select condition</option>
+                        <option value="good">Good</option>
+                        <option value="fair">Fair</option>
+                        <option value="poor">Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="${facadeId}_notes">Condition Notes & Deficiencies:</label>
+                    <textarea id="${facadeId}_notes" placeholder="Describe condition of: exterior walls, masonry, stucco, paint, windows, doors, roofing, rainwater goods, decorative elements. Note any deficiencies, causes if known, and recommended treatments."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>📷 Façade Photos:</label>
+                    <div class="photo-upload">
+                        <input type="file" id="${facadeId}_photos" accept="image/*" multiple data-preview="${facadeId}_preview">
+                        <button type="button" class="photo-btn" data-input="${facadeId}_photos">📷 Add Photos</button>
                     </div>
                     <div id="${facadeId}_preview" class="photo-preview"></div>
                 </div>
             `;
             container.appendChild(facadeSection);
-        }
-        
-        // Remove section
-        function removeSection(sectionId) {
-            if (confirm('Remove this section?')) {
-                document.getElementById(sectionId).remove();
-                triggerAutoSave();
-            }
-        }
-        
-        // Handle photo upload
-        function handlePhotoUpload(event, previewId) {
-            const files = event.target.files;
-            const preview = document.getElementById(previewId);
             
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const photoItem = document.createElement('div');
-                        photoItem.className = 'photo-item';
-                        photoItem.innerHTML = `
-                            <button onclick="this.parentElement.remove(); triggerAutoSave();">×</button>
-                            <img src="${e.target.result}" alt="Photo">
-                            <input type="text" class="caption-input" placeholder="Caption..." oninput="updateCaption(this); triggerAutoSave()">
-                            <div class="caption-display"></div>
-                        `;
-                        preview.appendChild(photoItem);
+            if (facadeCounter > 1) {
+                facadeSection.querySelector('.remove-section-btn').addEventListener('click', function() {
+                    if (confirm('Remove this façade?')) {
+                        document.getElementById(facadeId).remove();
                         triggerAutoSave();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            event.target.value = '';
-        }
-        
-        // Update the visible caption when input changes
-        function updateCaption(input) {
-            const display = input.parentElement.querySelector('.caption-display');
-            if (display) {
-                display.textContent = input.value;
+                    }
+                });
             }
+            
+            setupPhotoButtons();
         }
     </script>
 </body>
