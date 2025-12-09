@@ -252,6 +252,11 @@
             margin-top: 15px;
         }
         
+        /* Photo group label - hidden on screen, visible in print */
+        .photo-group-label {
+            display: none;
+        }
+        
         .photo-item {
             position: relative;
             border: 2px solid #ddd;
@@ -356,7 +361,7 @@
             display: none;
         }
         
-        /* Section running headers - hidden on screen, visible in print */
+        /* Section running headers - visible ONLY in print, positioned inline */
         .section-running-header {
             display: none;
         }
@@ -388,7 +393,7 @@
                 resize: none !important;
             }
             
-            /* Make textareas expand to show all content - override inline styles */
+            /* Make textareas expand to show all content */
             textarea {
                 height: auto !important;
                 min-height: 20px !important;
@@ -403,7 +408,7 @@
                 color: transparent !important;
             }
             
-            /* For empty textareas, show a minimum height so it's clear the field exists */
+            /* For empty textareas, show a minimum height */
             textarea:placeholder-shown {
                 min-height: 30px !important;
                 border-bottom: 1px solid #ccc !important;
@@ -439,7 +444,7 @@
                 page-break-inside: avoid;
             }
             
-            /* Compact print styles for entire document */
+            /* Compact print styles */
             .container h1 {
                 font-size: 16px;
                 margin-bottom: 4px;
@@ -546,7 +551,7 @@
                 page-break-after: avoid;
             }
             
-            /* Keep question and answer together - don't split across pages */
+            /* Keep question and answer together */
             .form-group {
                 page-break-inside: avoid;
             }
@@ -569,6 +574,19 @@
                 page-break-inside: avoid;
             }
             
+            /* Photo group labels - visible in print to identify orphaned photos */
+            .photo-group-label {
+                display: block !important;
+                font-size: 11px;
+                font-weight: 600;
+                color: #1a5276;
+                background: #eaf2f8;
+                padding: 4px 8px;
+                margin-bottom: 8px;
+                border-left: 3px solid #3498db;
+                page-break-after: avoid;
+            }
+            
             /* Keep checkbox/radio groups together */
             .checkbox-group, .radio-group {
                 page-break-inside: avoid;
@@ -580,7 +598,7 @@
                 display: none !important;
             }
             
-            /* Print header on each page - use running header approach */
+            /* Print header on each page */
             .print-header {
                 display: block !important;
                 position: fixed;
@@ -620,31 +638,19 @@
                 text-align: right;
             }
             
-            /* Section running headers - show at top of each section page */
+            /* Section running headers - INLINE banner at top of each section */
             .section-running-header {
                 display: block !important;
-                position: running(sectionHeader);
-                font-size: 9px;
-                color: #666;
-                padding: 4px 0;
-                border-bottom: 1px solid #ddd;
-                margin-bottom: 10px;
-                font-weight: 500;
-            }
-            
-            /* Alternative: inline section headers that repeat */
-            .room-section .section-running-header,
-            .facade-section .section-running-header {
-                display: block !important;
-                font-size: 9px;
+                font-size: 10px;
                 color: #1a5276;
                 background: #eaf2f8;
-                padding: 4px 8px;
-                margin: -10px -10px 10px -10px;
-                border-bottom: 1px solid #aed6f1;
+                padding: 6px 10px;
+                margin: -10px -10px 12px -10px;
+                border-bottom: 2px solid #3498db;
+                font-weight: 600;
             }
             
-            /* Add margin to content to account for fixed header/footer */
+            /* Add margin to content for fixed header/footer */
             .container {
                 margin-top: 30px !important;
                 margin-bottom: 30px !important;
@@ -653,10 +659,6 @@
             @page {
                 margin: 0.5in 0.5in 0.6in 0.5in;
                 size: letter;
-                
-                @bottom-right {
-                    content: counter(page);
-                }
             }
         }
         
@@ -671,15 +673,38 @@
             .buttons { flex-direction: column; }
             .buttons button { width: 100%; }
         }
+        
+        /* Debug console - DISABLED for production */
+        .debug-console {
+            display: none !important;
+        }
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.9);
+            color: #0f0;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            max-width: 400px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 5px;
+            z-index: 9999;
+            display: block; /* ENABLED */
+        }
     </style>
 </head>
 <body>
-    <!-- Print Header (appears on every printed page) -->
+    <!-- Debug Console -->
+    <div class="debug-console" id="debugConsole"></div>
+    
+    <!-- Print Header -->
     <div class="print-header">
         Heritage Property Conditions Assessment — <span id="printPropertyName"></span>
     </div>
     
-    <!-- Print Footer (appears on every printed page) -->
+    <!-- Print Footer -->
     <div class="print-footer">
         <span class="left">Assessment Date: <span id="printDate"></span></span>
         <span class="right">Heritage Property Conditions Assessment</span>
@@ -702,14 +727,15 @@
         </div>
         
         <!-- SECTION A: Property Information & Initial Steps -->
-        <div class="section-a-container">
+        <div class="section-a-container" id="sectionA">
+            <div class="section-running-header"></div>
             <h2>Section A: Property Information & Initial Steps</h2>
             
             <div class="form-section">
                 <div class="grid-2">
                     <div class="form-group">
                         <label for="propertyName">Property Name: *</label>
-                        <input type="text" id="propertyName" placeholder="Enter property name">
+                        <input type="text" id="propertyName" placeholder="Enter property name" oninput="updateAllRunningHeaders(); triggerAutoSave();">
                     </div>
                     <div class="form-group">
                         <label for="rpaNumber">RPA Number:</label>
@@ -833,7 +859,8 @@
         </div>
         
         <!-- SECTION D: Water Damage Reporting -->
-        <div class="section-break">
+        <div class="section-break" id="siteSection">
+            <div class="section-running-header"></div>
             <h2>Section D: Water Damage Reporting</h2>
             <div class="form-section">
                 <div class="warning-box">
@@ -865,13 +892,15 @@
                         <input type="file" id="waterPhotos" accept="image/*" multiple data-preview="waterPreview">
                         <button type="button" class="photo-btn" data-input="waterPhotos">📷 Add Photos</button>
                     </div>
+                    <div class="photo-group-label" id="water_photo_label"></div>
                     <div id="waterPreview" class="photo-preview"></div>
                 </div>
             </div>
         </div>
         
         <!-- SECTION E: Assessment Summary -->
-        <div class="summary-section">
+        <div class="summary-section" id="summarySection">
+            <div class="section-running-header"></div>
             <h2>Section E: Assessment Summary</h2>
             <div class="form-section">
                 <div class="form-group">
@@ -938,6 +967,215 @@
         let facadeCounter = 0;
         let autoSaveTimeout;
         let lastSaveTime = new Date();
+        let photoDB = null; // IndexedDB database for photos
+        
+        // ==========================================
+        // IndexedDB Setup for Photo Storage
+        // ==========================================
+        
+        function initPhotoDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('HeritageAssessmentPhotos', 1);
+                
+                request.onerror = function(event) {
+                    debugLog('IndexedDB error: ' + event.target.error);
+                    reject(event.target.error);
+                };
+                
+                request.onsuccess = function(event) {
+                    photoDB = event.target.result;
+                    debugLog('IndexedDB opened successfully');
+                    resolve(photoDB);
+                };
+                
+                request.onupgradeneeded = function(event) {
+                    const db = event.target.result;
+                    // Create object store for photos
+                    if (!db.objectStoreNames.contains('photos')) {
+                        const store = db.createObjectStore('photos', { keyPath: 'id' });
+                        store.createIndex('previewId', 'previewId', { unique: false });
+                        debugLog('IndexedDB photo store created');
+                    }
+                };
+            });
+        }
+        
+        // Save a photo to IndexedDB
+        function savePhotoToDB(photoId, previewId, imageData, caption) {
+            return new Promise((resolve, reject) => {
+                if (!photoDB) {
+                    reject(new Error('IndexedDB not initialized'));
+                    return;
+                }
+                
+                const transaction = photoDB.transaction(['photos'], 'readwrite');
+                const store = transaction.objectStore('photos');
+                
+                const photoRecord = {
+                    id: photoId,
+                    previewId: previewId,
+                    imageData: imageData,
+                    caption: caption,
+                    timestamp: new Date().toISOString()
+                };
+                
+                const request = store.put(photoRecord);
+                
+                request.onsuccess = function() {
+                    resolve(photoId);
+                };
+                
+                request.onerror = function(event) {
+                    debugLog('Error saving photo: ' + event.target.error);
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Get all photos from IndexedDB
+        function getAllPhotosFromDB() {
+            return new Promise((resolve, reject) => {
+                if (!photoDB) {
+                    reject(new Error('IndexedDB not initialized'));
+                    return;
+                }
+                
+                const transaction = photoDB.transaction(['photos'], 'readonly');
+                const store = transaction.objectStore('photos');
+                const request = store.getAll();
+                
+                request.onsuccess = function() {
+                    resolve(request.result);
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Get photos for a specific preview container
+        function getPhotosForPreview(previewId) {
+            return new Promise((resolve, reject) => {
+                if (!photoDB) {
+                    reject(new Error('IndexedDB not initialized'));
+                    return;
+                }
+                
+                const transaction = photoDB.transaction(['photos'], 'readonly');
+                const store = transaction.objectStore('photos');
+                const index = store.index('previewId');
+                const request = index.getAll(previewId);
+                
+                request.onsuccess = function() {
+                    resolve(request.result);
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Delete a photo from IndexedDB
+        function deletePhotoFromDB(photoId) {
+            return new Promise((resolve, reject) => {
+                if (!photoDB) {
+                    reject(new Error('IndexedDB not initialized'));
+                    return;
+                }
+                
+                const transaction = photoDB.transaction(['photos'], 'readwrite');
+                const store = transaction.objectStore('photos');
+                const request = store.delete(photoId);
+                
+                request.onsuccess = function() {
+                    resolve();
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Clear all photos from IndexedDB
+        function clearAllPhotosFromDB() {
+            return new Promise((resolve, reject) => {
+                if (!photoDB) {
+                    reject(new Error('IndexedDB not initialized'));
+                    return;
+                }
+                
+                const transaction = photoDB.transaction(['photos'], 'readwrite');
+                const store = transaction.objectStore('photos');
+                const request = store.clear();
+                
+                request.onsuccess = function() {
+                    debugLog('All photos cleared from IndexedDB');
+                    resolve();
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Update photo caption in IndexedDB
+        function updatePhotoCaptionInDB(photoId, newCaption) {
+            return new Promise((resolve, reject) => {
+                if (!photoDB) {
+                    reject(new Error('IndexedDB not initialized'));
+                    return;
+                }
+                
+                const transaction = photoDB.transaction(['photos'], 'readwrite');
+                const store = transaction.objectStore('photos');
+                const getRequest = store.get(photoId);
+                
+                getRequest.onsuccess = function() {
+                    const photo = getRequest.result;
+                    if (photo) {
+                        photo.caption = newCaption;
+                        store.put(photo);
+                        resolve();
+                    } else {
+                        reject(new Error('Photo not found'));
+                    }
+                };
+                
+                getRequest.onerror = function(event) {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Get IndexedDB storage estimate
+        async function getStorageEstimate() {
+            if (navigator.storage && navigator.storage.estimate) {
+                const estimate = await navigator.storage.estimate();
+                const usedMB = (estimate.usage / 1024 / 1024).toFixed(2);
+                const quotaMB = (estimate.quota / 1024 / 1024).toFixed(0);
+                return { usedMB, quotaMB, percentUsed: ((estimate.usage / estimate.quota) * 100).toFixed(1) };
+            }
+            return null;
+        }
+        
+        // ==========================================
+        // End IndexedDB Setup
+        // ==========================================
+        
+        // Debug logging - DISABLED for production
+        function debugLog(msg) {
+            // Uncomment below lines to enable debugging:
+            // console.log('[DEBUG]', msg);
+            // const debugEl = document.getElementById('debugConsole');
+            // if (debugEl) {
+            //     debugEl.innerHTML += msg + '<br>';
+            //     debugEl.scrollTop = debugEl.scrollHeight;
+            // }
+        }
         
         // Prepare print header/footer before printing
         function preparePrint() {
@@ -950,10 +1188,78 @@
             // Mark empty sections to hide in print
             markEmptySections();
             
+            // Update all section running headers
+            updateAllRunningHeaders();
+            
             window.print();
         }
         
-        // Check if a room section is empty (no name filled in)
+        // Update all running headers for print
+        function updateAllRunningHeaders() {
+            // Get property name for all headers
+            const propertyName = document.getElementById('propertyName')?.value || 'Heritage Property';
+            const baseHeader = 'Heritage Property Conditions Assessment — ' + propertyName;
+            
+            // Update Section A header (if exists)
+            const sectionAHeader = document.querySelector('#sectionA .section-running-header');
+            if (sectionAHeader) {
+                sectionAHeader.textContent = baseHeader + ' — Property Information';
+            }
+            
+            // Update room running headers and photo labels
+            document.querySelectorAll('.room-section').forEach(function(section, index) {
+                const nameInput = section.querySelector('input[id$="_name"]');
+                const header = section.querySelector('.section-running-header');
+                const photoLabel = section.querySelector('.photo-group-label');
+                const roomName = nameInput && nameInput.value ? nameInput.value : 'Room ' + (index + 1);
+                
+                if (header) {
+                    header.textContent = baseHeader + ' — ' + roomName;
+                }
+                if (photoLabel) {
+                    photoLabel.textContent = 'Photos: ' + propertyName + ' — ' + roomName;
+                }
+            });
+            
+            // Update facade running headers and photo labels
+            document.querySelectorAll('.facade-section').forEach(function(section, index) {
+                const facingSelect = section.querySelector('select[id$="_facing"]');
+                const header = section.querySelector('.section-running-header');
+                const photoLabel = section.querySelector('.photo-group-label');
+                
+                let facadeName = 'Façade ' + (index + 1);
+                if (facingSelect && facingSelect.value) {
+                    facadeName = facingSelect.value + ' Façade';
+                }
+                
+                if (header) {
+                    header.textContent = baseHeader + ' — ' + facadeName;
+                }
+                if (photoLabel) {
+                    photoLabel.textContent = 'Photos: ' + propertyName + ' — ' + facadeName;
+                }
+            });
+            
+            // Update Section D header (Water Damage)
+            const sectionDHeader = document.querySelector('#siteSection .section-running-header');
+            if (sectionDHeader) {
+                sectionDHeader.textContent = baseHeader + ' — Water Damage';
+            }
+            
+            // Update water damage photo label
+            const waterPhotoLabel = document.getElementById('water_photo_label');
+            if (waterPhotoLabel) {
+                waterPhotoLabel.textContent = 'Photos: ' + propertyName + ' — Water Damage';
+            }
+            
+            // Update Section E header (Summary)
+            const sectionEHeader = document.querySelector('#summarySection .section-running-header');
+            if (sectionEHeader) {
+                sectionEHeader.textContent = baseHeader + ' — Assessment Summary';
+            }
+        }
+        
+        // Check if a room section is empty
         function isSectionEmpty(section) {
             const nameInput = section.querySelector('input[id$="_name"]');
             const notesTextarea = section.querySelector('textarea');
@@ -962,14 +1268,11 @@
             const selectedDropdowns = section.querySelectorAll('select');
             const photos = section.querySelectorAll('.photo-item');
             
-            // If no name is provided, consider it empty
             if (!nameInput || !nameInput.value.trim()) {
-                // But check if any other content exists
                 if (notesTextarea && notesTextarea.value.trim()) return false;
                 if (checkedBoxes.length > 0) return false;
                 if (photos.length > 0) return false;
                 
-                // Check if any dropdown has a non-default selection
                 for (let dropdown of selectedDropdowns) {
                     if (dropdown.value && dropdown.selectedIndex > 0) return false;
                 }
@@ -981,7 +1284,6 @@
         
         // Mark empty sections before printing
         function markEmptySections() {
-            // Check room sections
             document.querySelectorAll('.room-section').forEach(section => {
                 if (isSectionEmpty(section)) {
                     section.classList.add('empty-section');
@@ -990,7 +1292,6 @@
                 }
             });
             
-            // Check facade sections
             document.querySelectorAll('.facade-section').forEach(section => {
                 if (isSectionEmpty(section)) {
                     section.classList.add('empty-section');
@@ -1000,7 +1301,7 @@
             });
         }
         
-        // Also update on beforeprint event
+        // Before print event handler
         window.addEventListener('beforeprint', function() {
             const propertyName = document.getElementById('propertyName').value || 'Untitled Property';
             const assessmentDate = document.getElementById('assessmentDate').value || new Date().toISOString().split('T')[0];
@@ -1008,34 +1309,12 @@
             document.getElementById('printPropertyName').textContent = propertyName;
             document.getElementById('printDate').textContent = assessmentDate;
             
-            // Update all room running headers
-            document.querySelectorAll('.room-section').forEach(function(section) {
-                const nameInput = section.querySelector('input[id$="_name"]');
-                const header = section.querySelector('.running-header-name');
-                if (header && nameInput) {
-                    header.textContent = nameInput.value || 'Room ' + section.id.replace('room', '');
-                }
-            });
-            
-            // Update all facade running headers
-            document.querySelectorAll('.facade-section').forEach(function(section) {
-                const facingSelect = section.querySelector('select[id$="_facing"]');
-                const header = section.querySelector('.running-header-name');
-                if (header && facingSelect) {
-                    const direction = facingSelect.options[facingSelect.selectedIndex]?.text || '';
-                    const num = section.id.replace('facade', '');
-                    header.textContent = (direction && direction !== 'Select direction') ? direction + ' Façade' : 'Façade ' + num;
-                }
-            });
-            
-            // Mark empty sections to hide in print
             markEmptySections();
+            updateAllRunningHeaders();
             
-            // Auto-expand all textareas to show full content
+            // Auto-expand all textareas
             document.querySelectorAll('textarea').forEach(function(textarea) {
-                // Store original style
                 textarea.dataset.originalStyle = textarea.getAttribute('style') || '';
-                // Reset height constraints and set to content height
                 textarea.style.height = 'auto';
                 textarea.style.minHeight = '0';
                 textarea.style.maxHeight = 'none';
@@ -1044,13 +1323,12 @@
             });
         });
         
-        // Restore sections after print (in case user continues editing)
+        // After print event handler
         window.addEventListener('afterprint', function() {
             document.querySelectorAll('.empty-section').forEach(section => {
                 section.classList.remove('empty-section');
             });
             
-            // Reset textarea styles to original
             document.querySelectorAll('textarea').forEach(function(textarea) {
                 if (textarea.dataset.originalStyle) {
                     textarea.setAttribute('style', textarea.dataset.originalStyle);
@@ -1060,29 +1338,43 @@
             });
         });
         
-        window.addEventListener('load', function() {
-            // Check if there's saved data to determine how many rooms/facades to create
+        // Page load handler
+        window.addEventListener('load', async function() {
+            debugLog('Page loaded');
+            
+            // Initialize IndexedDB for photos
+            try {
+                await initPhotoDB();
+                debugLog('Photo database ready');
+                
+                // Show storage estimate
+                const storage = await getStorageEstimate();
+                if (storage) {
+                    debugLog('Storage: ' + storage.usedMB + ' MB used of ' + storage.quotaMB + ' MB (' + storage.percentUsed + '%)');
+                }
+            } catch (e) {
+                debugLog('IndexedDB init failed: ' + e.message);
+                // Continue anyway - will fall back to localStorage
+            }
+            
             const saved = localStorage.getItem('assessmentForm');
             let roomsToCreate = 1;
             let facadesToCreate = 1;
             
-            // DEBUG: Show what we found in localStorage
             if (saved) {
                 try {
                     const formData = JSON.parse(saved);
-                    console.log('Found saved data:', formData.roomCount, 'rooms,', formData.facadeCount, 'facades');
-                    console.log('Property name in data:', formData.data?.propertyName);
+                    debugLog('Found saved data: ' + formData.roomCount + ' rooms, ' + formData.facadeCount + ' facades');
                     roomsToCreate = formData.roomCount || 1;
                     facadesToCreate = formData.facadeCount || 1;
                 } catch (e) {
-                    console.error('Error parsing saved data', e);
-                    alert('Error parsing saved data: ' + e.message);
+                    debugLog('Error parsing saved data: ' + e.message);
                 }
             } else {
-                console.log('No saved data found in localStorage');
+                debugLog('No saved data found');
             }
             
-            // Create the correct number of rooms and facades
+            // Create rooms and facades
             for (let i = 0; i < roomsToCreate; i++) {
                 addRoom();
             }
@@ -1090,16 +1382,36 @@
                 addFacade();
             }
             
-            // Now load the data into the created fields
+            // Load the form data (non-photo fields)
             loadFormData();
             
-            // Set default date if not already set
+            // Load photos from IndexedDB
+            await loadPhotosFromDB();
+            
+            // Set default date
             if (!document.getElementById('assessmentDate').value) {
                 document.getElementById('assessmentDate').value = new Date().toISOString().split('T')[0];
             }
             
             setupPhotoButtons();
         });
+        
+        // Load photos from IndexedDB into the DOM
+        async function loadPhotosFromDB() {
+            try {
+                const photos = await getAllPhotosFromDB();
+                debugLog('Loading ' + photos.length + ' photos from IndexedDB');
+                
+                photos.forEach(function(photo) {
+                    const preview = document.getElementById(photo.previewId);
+                    if (preview) {
+                        addPhotoToDOM(photo.id, photo.imageData, preview, photo.caption);
+                    }
+                });
+            } catch (e) {
+                debugLog('Error loading photos: ' + e.message);
+            }
+        }
         
         document.addEventListener('input', triggerAutoSave);
         document.addEventListener('change', triggerAutoSave);
@@ -1138,6 +1450,10 @@
                 data: {}
             };
             
+            // Track Section E specifically
+            const sectionEFields = ['overallFindings', 'recommendations', 'urgentItems', 'followUp'];
+            let sectionEStatus = [];
+            
             document.querySelectorAll('input, textarea, select').forEach(function(el) {
                 if (el.id && el.type !== 'file') {
                     if (el.type === 'checkbox' || el.type === 'radio') {
@@ -1145,20 +1461,75 @@
                     } else {
                         formData.data[el.id] = el.value;
                     }
+                    
+                    // Track Section E fields
+                    if (sectionEFields.includes(el.id)) {
+                        sectionEStatus.push(el.id + '=' + (el.value ? '"' + el.value.substring(0,30) + '..."' : '(empty)'));
+                    }
                 }
             });
             
-            document.querySelectorAll('.photo-item').forEach(function(item, index) {
-                const img = item.querySelector('img');
-                const caption = item.querySelector('input.caption-input');
-                const previewId = item.closest('.photo-preview').id;
-                if (img && caption) {
-                    formData.data[previewId + '_photo_' + index + '_src'] = img.src;
-                    formData.data[previewId + '_photo_' + index + '_caption'] = caption.value;
-                }
-            });
+            // NOTE: Photos are now stored in IndexedDB, not localStorage
+            // This keeps localStorage small and prevents quota errors
             
-            localStorage.setItem('assessmentForm', JSON.stringify(formData));
+            const jsonData = JSON.stringify(formData);
+            const dataSizeMB = (jsonData.length / 1024 / 1024).toFixed(3);
+            
+            try {
+                localStorage.setItem('assessmentForm', jsonData);
+                debugLog('Saved: ' + Object.keys(formData.data).length + ' fields (' + dataSizeMB + ' MB)');
+                debugLog('Section E: ' + sectionEStatus.join(', '));
+                console.log('[SAVE] Section E status:', sectionEStatus);
+                
+                return { success: true, data: formData };
+            } catch (e) {
+                debugLog('SAVE ERROR: ' + e.message);
+                console.error('Save error:', e);
+                
+                // Show prominent warning
+                showStorageError(dataSizeMB);
+                
+                // Return the data anyway so export can use it directly
+                return { success: false, data: formData, error: e.message };
+            }
+        }
+        
+        // Save a single photo to IndexedDB (called when photo is added)
+        async function savePhotoToStorage(photoId, previewId, imageData, caption) {
+            try {
+                await savePhotoToDB(photoId, previewId, imageData, caption);
+                debugLog('Photo saved to IndexedDB: ' + photoId);
+                
+                // Show updated storage estimate
+                const storage = await getStorageEstimate();
+                if (storage) {
+                    debugLog('Storage now: ' + storage.usedMB + ' MB (' + storage.percentUsed + '%)');
+                }
+            } catch (e) {
+                debugLog('Error saving photo to IndexedDB: ' + e.message);
+            }
+        }
+        
+        function showStorageWarning(sizeMB) {
+            const existing = document.getElementById('storageWarning');
+            if (existing) existing.remove();
+            
+            const warning = document.createElement('div');
+            warning.id = 'storageWarning';
+            warning.style.cssText = 'position:fixed;top:50px;right:10px;background:#fff3cd;border:2px solid #ffc107;padding:10px 15px;border-radius:8px;z-index:1001;max-width:300px;font-size:13px;box-shadow:0 2px 10px rgba(0,0,0,0.2);';
+            warning.innerHTML = '<strong>⚠️ Storage Warning</strong><br>Data size: ' + sizeMB + ' MB<br>Consider exporting soon.<br><button onclick="this.parentElement.remove()" style="margin-top:8px;padding:4px 12px;cursor:pointer;">Dismiss</button>';
+            document.body.appendChild(warning);
+        }
+        
+        function showStorageError(sizeMB) {
+            const existing = document.getElementById('storageError');
+            if (existing) existing.remove();
+            
+            const error = document.createElement('div');
+            error.id = 'storageError';
+            error.style.cssText = 'position:fixed;top:50px;left:50%;transform:translateX(-50%);background:#f8d7da;border:2px solid #dc3545;padding:15px 20px;border-radius:8px;z-index:1002;max-width:400px;font-size:14px;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;';
+            error.innerHTML = '<strong>❌ Storage Error</strong><br><br>Click "Export Data" now to save your work.<br><br><button onclick="this.parentElement.remove()" style="padding:8px 20px;cursor:pointer;font-size:14px;">I Understand</button>';
+            document.body.appendChild(error);
         }
         
         function loadFormData() {
@@ -1167,9 +1538,15 @@
             
             try {
                 const formData = JSON.parse(saved);
+                debugLog('Loading ' + Object.keys(formData.data).length + ' fields from localStorage');
                 
-                // Populate form fields
+                // Populate form fields (photos are loaded separately from IndexedDB)
+                let loadedCount = 0;
+                
                 Object.keys(formData.data).forEach(function(key) {
+                    // Skip photo data - photos are now in IndexedDB
+                    if (key.includes('_photo_')) return;
+                    
                     const el = document.getElementById(key);
                     if (el) {
                         if (el.type === 'checkbox' || el.type === 'radio') {
@@ -1177,96 +1554,129 @@
                         } else {
                             el.value = formData.data[key];
                         }
+                        loadedCount++;
                     }
                 });
                 
-                // Load photos
-                Object.keys(formData.data).forEach(function(key) {
-                    if (key.endsWith('_src')) {
-                        const photoId = key.replace('_src', '');
-                        const previewId = photoId.substring(0, photoId.lastIndexOf('_photo_'));
-                        const preview = document.getElementById(previewId);
-                        if (preview) {
-                            addPhotoDirectly(formData.data[key], preview, formData.data[photoId + '_caption'] || '');
-                        }
-                    }
-                });
+                debugLog('Loaded ' + loadedCount + ' form fields');
+                
             } catch (e) {
-                console.error('Error loading form data', e);
+                debugLog('Error loading form data: ' + e.message);
             }
         }
         
-        function exportData() {
-            try {
-                saveFormData();
-            } catch (e) {
-                console.error('Save before export failed:', e);
-            }
+        async function exportData() {
+            // Force a save before export
+            debugLog('=== EXPORT STARTING ===');
             
-            const data = localStorage.getItem('assessmentForm');
-            if (!data) {
-                alert('No data to export. Please fill in some form fields first.');
+            let formData;
+            
+            try {
+                const saveResult = saveFormData();
+                debugLog('Form data save completed, success: ' + saveResult.success);
+                formData = saveResult.data;
+            } catch(e) {
+                debugLog('SAVE ERROR: ' + e.message);
+                console.error('Save error:', e);
                 return;
             }
             
+            // Now collect photos from IndexedDB
+            try {
+                debugLog('Collecting photos from IndexedDB...');
+                const photos = await getAllPhotosFromDB();
+                debugLog('Found ' + photos.length + ' photos in IndexedDB');
+                
+                // Add photos to the form data
+                photos.forEach(function(photo, index) {
+                    formData.data[photo.previewId + '_photo_' + index + '_src'] = photo.imageData;
+                    formData.data[photo.previewId + '_photo_' + index + '_caption'] = photo.caption || '';
+                    formData.data[photo.previewId + '_photo_' + index + '_id'] = photo.id;
+                });
+                
+            } catch(e) {
+                debugLog('Error collecting photos: ' + e.message);
+            }
+            
+            // Convert to JSON
+            const data = JSON.stringify(formData);
+            const dataSizeMB = (data.length / 1024 / 1024).toFixed(2);
+            
+            debugLog('Total export size: ' + dataSizeMB + ' MB');
+            debugLog('Total keys: ' + Object.keys(formData.data).length);
+            
+            // Check Section E
+            const sectionE = ['overallFindings', 'recommendations', 'urgentItems', 'followUp'];
+            sectionE.forEach(function(field) {
+                const val = formData.data[field];
+                debugLog(field + ': ' + (val ? val.substring(0,20) + '...' : '(EMPTY!)'));
+            });
+            
             const propertyName = document.getElementById('propertyName')?.value || 'Assessment';
             const date = new Date().toISOString().split('T')[0];
-            const filename = `${propertyName.replace(/[^a-z0-9]/gi, '_')}_${date}.json`;
+            const filename = propertyName.replace(/[^a-z0-9]/gi, '_') + '_' + date + '.json';
             
-            console.log('Exporting data:', filename, data.length, 'bytes');
+            debugLog('Filename: ' + filename);
             
             // Try modern share API first (iOS)
             if (navigator.share && navigator.canShare) {
+                debugLog('Trying Share API...');
                 try {
                     const file = new File([data], filename, { type: 'application/json' });
                     if (navigator.canShare({ files: [file] })) {
                         navigator.share({
                             files: [file],
                             title: 'Assessment Data Export'
-                        }).then(() => {
-                            console.log('Shared successfully');
-                        }).catch((err) => {
-                            console.log('Share failed, falling back', err);
+                        }).then(function() {
+                            debugLog('Shared successfully');
+                        }).catch(function(err) {
+                            debugLog('Share failed: ' + err);
                             fallbackExport(data, filename);
                         });
                         return;
                     }
                 } catch (e) {
-                    console.log('Share API error:', e);
+                    debugLog('Share API error: ' + e);
                 }
             }
             
+            debugLog('Using fallback export...');
             fallbackExport(data, filename);
         }
         
         function fallbackExport(data, filename) {
+            debugLog('fallbackExport called');
             try {
                 const blob = new Blob([data], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
+                debugLog('Blob URL created');
                 
-                // For iOS Safari, open in new window
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                debugLog('Is iOS: ' + isIOS);
+                
                 if (isIOS) {
-                    // Open blob URL in new tab - user can long-press to save
                     const newWindow = window.open(url, '_blank');
                     if (newWindow) {
-                        alert('✅ Data opened in new tab.\\n\\nTo save: Long-press and select "Download Linked File"');
+                        debugLog('Opened in new window');
+                        alert('✅ Data opened in new tab.\n\nTo save: Long-press and select "Download Linked File"');
                     } else {
-                        // Popup blocked - show data for copy
-                        const copyData = prompt('Popup blocked. Copy this data manually:', data.substring(0, 1000) + '...');
+                        debugLog('Popup blocked');
+                        alert('Popup blocked. Please allow popups for this site.');
                     }
                 } else {
-                    // Desktop - standard download
+                    debugLog('Creating download link...');
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = filename;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
-                    setTimeout(() => URL.revokeObjectURL(url), 100);
+                    setTimeout(function() { URL.revokeObjectURL(url); }, 100);
+                    debugLog('Download triggered');
                     alert('✅ Data exported successfully!');
                 }
             } catch (e) {
+                debugLog('FALLBACK ERROR: ' + e.message);
                 console.error('Export error:', e);
                 alert('Export failed: ' + e.message);
             }
@@ -1276,18 +1686,15 @@
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             
             if (isIOS) {
-                // On iOS, show a modal with the file input visible
                 const modal = document.createElement('div');
                 modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;';
-                modal.innerHTML = `
-                    <div style="background:white;padding:30px;border-radius:12px;text-align:center;max-width:90%;margin:20px;">
-                        <h3 style="margin-top:0;">Import Assessment Data</h3>
-                        <p>Select your saved .json file:</p>
-                        <input type="file" id="iosImportFile" accept=".json,application/json" style="margin:15px 0;font-size:16px;">
-                        <br>
-                        <button onclick="this.closest('div').parentElement.remove();" style="padding:12px 24px;font-size:16px;margin-top:10px;">Cancel</button>
-                    </div>
-                `;
+                modal.innerHTML = '<div style="background:white;padding:30px;border-radius:12px;text-align:center;max-width:90%;margin:20px;">' +
+                    '<h3 style="margin-top:0;">Import Assessment Data</h3>' +
+                    '<p>Select your saved .json file:</p>' +
+                    '<input type="file" id="iosImportFile" accept=".json,application/json" style="margin:15px 0;font-size:16px;">' +
+                    '<br>' +
+                    '<button onclick="this.closest(\'div\').parentElement.remove();" style="padding:12px 24px;font-size:16px;margin-top:10px;">Cancel</button>' +
+                    '</div>';
                 document.body.appendChild(modal);
                 
                 document.getElementById('iosImportFile').addEventListener('change', function(e) {
@@ -1300,78 +1707,121 @@
             }
         }
 
-        function handleImport(event) {
+        async function handleImport(event) {
             const file = event.target.files[0];
             if (!file) return;
             
+            debugLog('Importing file: ' + file.name);
+            
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     const rawData = e.target.result;
                     const formData = JSON.parse(rawData);
+                    
+                    debugLog('Parsed data: ' + formData.roomCount + ' rooms, ' + formData.facadeCount + ' facades');
                     
                     // Validate the data structure
                     if (!formData.data) {
                         throw new Error('Invalid file format - missing data property');
                     }
                     
-                    // Save to localStorage for future visits
-                    localStorage.setItem('assessmentForm', rawData);
+                    // Clear existing photos from IndexedDB
+                    try {
+                        await clearAllPhotosFromDB();
+                        debugLog('Cleared existing photos from IndexedDB');
+                    } catch(e) {
+                        debugLog('Error clearing photos: ' + e.message);
+                    }
                     
-                    // Clear existing rooms and facades (except first of each)
+                    // Extract photos from the imported data and save to IndexedDB
+                    const photoKeys = Object.keys(formData.data).filter(k => k.includes('_photo_') && k.endsWith('_src'));
+                    debugLog('Found ' + photoKeys.length + ' photos in import file');
+                    
+                    for (const key of photoKeys) {
+                        const previewId = key.substring(0, key.indexOf('_photo_'));
+                        const photoId = key.replace('_src', '').replace(previewId + '_photo_', previewId + '_photo_import_');
+                        const captionKey = key.replace('_src', '_caption');
+                        const caption = formData.data[captionKey] || '';
+                        const imageData = formData.data[key];
+                        
+                        try {
+                            await savePhotoToDB(photoId, previewId, imageData, caption);
+                        } catch(e) {
+                            debugLog('Error saving imported photo: ' + e.message);
+                        }
+                        
+                        // Remove photo from formData so it doesn't go into localStorage
+                        delete formData.data[key];
+                        delete formData.data[captionKey];
+                        if (formData.data[key.replace('_src', '_id')]) {
+                            delete formData.data[key.replace('_src', '_id')];
+                        }
+                    }
+                    
+                    // Save non-photo data to localStorage
+                    localStorage.setItem('assessmentForm', JSON.stringify(formData));
+                    
+                    // Clear existing rooms and facades
                     const roomsContainer = document.getElementById('roomsContainer');
                     const facadesContainer = document.getElementById('facadesContainer');
                     
-                    // Remove all rooms and facades
                     roomsContainer.innerHTML = '';
                     facadesContainer.innerHTML = '';
                     roomCounter = 0;
                     facadeCounter = 0;
                     
-                    // Create the correct number of rooms and facades
+                    // Create the correct number of rooms
                     const roomsToCreate = formData.roomCount || 1;
-                    const facadesToCreate = formData.facadeCount || 1;
-                    
+                    debugLog('Creating ' + roomsToCreate + ' rooms');
                     for (let i = 0; i < roomsToCreate; i++) {
                         addRoom();
                     }
+                    
+                    // Create the correct number of facades
+                    const facadesToCreate = formData.facadeCount || 1;
+                    debugLog('Creating ' + facadesToCreate + ' facades');
                     for (let i = 0; i < facadesToCreate; i++) {
                         addFacade();
                     }
                     
-                    // Populate all form fields
-                    Object.keys(formData.data).forEach(function(key) {
-                        // Skip photo data for now
-                        if (key.includes('_photo_')) return;
+                    // Small delay to ensure DOM is ready
+                    setTimeout(async function() {
+                        // Populate all form fields
+                        let loadedCount = 0;
                         
-                        const el = document.getElementById(key);
-                        if (el) {
-                            if (el.type === 'checkbox' || el.type === 'radio') {
-                                el.checked = formData.data[key];
-                            } else {
-                                el.value = formData.data[key];
+                        Object.keys(formData.data).forEach(function(key) {
+                            const el = document.getElementById(key);
+                            if (el) {
+                                if (el.type === 'checkbox' || el.type === 'radio') {
+                                    el.checked = formData.data[key];
+                                } else {
+                                    el.value = formData.data[key];
+                                }
+                                loadedCount++;
                             }
+                        });
+                        
+                        debugLog('Loaded ' + loadedCount + ' form fields');
+                        
+                        // Load photos from IndexedDB into the DOM
+                        await loadPhotosFromDB();
+                        
+                        setupPhotoButtons();
+                        
+                        // Show storage estimate
+                        const storage = await getStorageEstimate();
+                        if (storage) {
+                            debugLog('Storage: ' + storage.usedMB + ' MB used');
                         }
-                    });
-                    
-                    // Load photos
-                    Object.keys(formData.data).forEach(function(key) {
-                        if (key.endsWith('_src')) {
-                            const photoId = key.replace('_src', '');
-                            const previewId = photoId.substring(0, photoId.lastIndexOf('_photo_'));
-                            const preview = document.getElementById(previewId);
-                            if (preview) {
-                                addPhotoDirectly(formData.data[key], preview, formData.data[photoId + '_caption'] || '');
-                            }
-                        }
-                    });
-                    
-                    setupPhotoButtons();
-                    
-                    alert('✅ Data imported successfully!');
+                        
+                        alert('✅ Data imported successfully!\n\n' + loadedCount + ' fields + ' + photoKeys.length + ' photos loaded.');
+                        
+                    }, 100);
                     
                 } catch (error) {
                     console.error('Import error:', error);
+                    debugLog('Import error: ' + error.message);
                     alert('❌ Error importing: ' + error.message);
                 }
             };
@@ -1382,16 +1832,21 @@
             reader.readAsText(file);
         }
         
-        function clearForm() {
+        async function clearForm() {
             if (confirm('Clear all data? This cannot be undone.')) {
                 localStorage.removeItem('assessmentForm');
+                try {
+                    await clearAllPhotosFromDB();
+                    debugLog('Photos cleared from IndexedDB');
+                } catch(e) {
+                    debugLog('Error clearing photos: ' + e.message);
+                }
                 location.reload();
             }
         }
         
         function setupPhotoButtons() {
             document.querySelectorAll('.photo-btn').forEach(function(btn) {
-                // Skip if already initialized
                 if (btn.hasAttribute('data-initialized')) return;
                 btn.setAttribute('data-initialized', 'true');
                 
@@ -1421,13 +1876,14 @@
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         const img = new Image();
-                        img.onload = function() {
+                        img.onload = async function() {
                             try {
                                 const canvas = document.createElement('canvas');
                                 const ctx = canvas.getContext('2d');
                                 let width = img.width;
                                 let height = img.height;
-                                const maxSize = 2000;
+                                // Reduced to 800px max for smaller file sizes
+                                const maxSize = 800;
                                 
                                 if (width > maxSize || height > maxSize) {
                                     if (width > height) {
@@ -1442,10 +1898,27 @@
                                 canvas.width = width;
                                 canvas.height = height;
                                 ctx.drawImage(img, 0, 0, width, height);
-                                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                                addPhotoDirectly(dataUrl, preview, '');
+                                // Reduced quality to 50% for smaller file sizes
+                                const dataUrl = canvas.toDataURL('image/jpeg', 0.50);
+                                
+                                // Generate unique photo ID
+                                const photoId = previewId + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                                
+                                // Show size in debug
+                                const photoSizeKB = Math.round(dataUrl.length / 1024);
+                                debugLog('Photo added: ' + photoSizeKB + ' KB');
+                                
+                                // Save to IndexedDB
+                                await savePhotoToStorage(photoId, previewId, dataUrl, '');
+                                
+                                // Add to DOM
+                                addPhotoToDOM(photoId, dataUrl, preview, '');
+                                
                             } catch (err) {
-                                addPhotoDirectly(e.target.result, preview, '');
+                                debugLog('Photo processing error: ' + err.message);
+                                // Fallback - still try to add the photo
+                                const photoId = previewId + '_' + Date.now();
+                                addPhotoToDOM(photoId, e.target.result, preview, '');
                             }
                         };
                         img.src = e.target.result;
@@ -1456,189 +1929,195 @@
             setTimeout(function() { event.target.value = ''; }, 100);
         }
         
-        // Update running header when room name changes
         function updateRunningHeader(input, roomId) {
             const section = document.getElementById(roomId);
             if (section) {
-                const header = section.querySelector('.running-header-name');
+                const header = section.querySelector('.section-running-header');
                 if (header) {
-                    header.textContent = input.value || 'Room ' + roomId.replace('room', '');
+                    const roomName = input.value || 'Room ' + roomId.replace('room', '');
+                    header.textContent = 'Section B: Interior Assessment — ' + roomName;
                 }
             }
         }
         
-        // Update running header when facade direction changes
         function updateFacadeRunningHeader(select, facadeId) {
             const section = document.getElementById(facadeId);
             if (section) {
-                const header = section.querySelector('.running-header-name');
+                const header = section.querySelector('.section-running-header');
                 if (header) {
                     const direction = select.value || '';
                     const num = facadeId.replace('facade', '');
-                    header.textContent = direction ? direction + ' Façade' : 'Façade ' + num;
+                    const facadeName = direction ? direction + ' Façade' : 'Façade ' + num;
+                    header.textContent = 'Section C: Façade Assessment — ' + facadeName;
                 }
             }
         }
         
-        function addPhotoDirectly(imageSrc, preview, caption) {
+        // Add photo to DOM (display only - doesn't save to IndexedDB)
+        function addPhotoToDOM(photoId, imageSrc, preview, caption) {
             const photoItem = document.createElement('div');
             photoItem.className = 'photo-item';
-            photoItem.innerHTML = `
-                <button onclick="removePhoto(this)">×</button>
-                <img src="${imageSrc}" alt="Photo">
-                <input type="text" class="caption-input" placeholder="Add caption..." value="${caption}" oninput="updateCaption(this); triggerAutoSave()">
-                <div class="caption-display">${caption}</div>
-            `;
+            photoItem.setAttribute('data-photo-id', photoId);
+            photoItem.innerHTML = '<button onclick="removePhoto(this)">×</button>' +
+                '<img src="' + imageSrc + '" alt="Photo">' +
+                '<input type="text" class="caption-input" placeholder="Add caption..." value="' + (caption || '') + '" onchange="updatePhotoCaption(this)">' +
+                '<div class="caption-display">' + (caption || '') + '</div>';
             preview.appendChild(photoItem);
-            triggerAutoSave();
         }
         
-        function updateCaption(input) {
+        // Legacy function - redirects to addPhotoToDOM
+        function addPhotoDirectly(imageSrc, preview, caption) {
+            const photoId = preview.id + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            addPhotoToDOM(photoId, imageSrc, preview, caption);
+            // Also save to IndexedDB
+            savePhotoToStorage(photoId, preview.id, imageSrc, caption);
+        }
+        
+        // Update photo caption in IndexedDB when changed
+        async function updatePhotoCaption(input) {
             const display = input.parentElement.querySelector('.caption-display');
             if (display) {
                 display.textContent = input.value;
             }
+            
+            // Update in IndexedDB
+            const photoItem = input.closest('.photo-item');
+            const photoId = photoItem?.getAttribute('data-photo-id');
+            if (photoId) {
+                try {
+                    await updatePhotoCaptionInDB(photoId, input.value);
+                    debugLog('Caption updated for ' + photoId);
+                } catch(e) {
+                    debugLog('Error updating caption: ' + e.message);
+                }
+            }
         }
         
-        function removePhoto(button) {
+        function updateCaption(input) {
+            updatePhotoCaption(input);
+        }
+        
+        async function removePhoto(button) {
             if (button && button.parentElement) {
-                button.parentElement.remove();
+                const photoItem = button.parentElement;
+                const photoId = photoItem.getAttribute('data-photo-id');
+                
+                // Remove from IndexedDB
+                if (photoId) {
+                    try {
+                        await deletePhotoFromDB(photoId);
+                        debugLog('Photo deleted from IndexedDB: ' + photoId);
+                    } catch(e) {
+                        debugLog('Error deleting photo: ' + e.message);
+                    }
+                }
+                
+                // Remove from DOM
+                photoItem.remove();
                 triggerAutoSave();
             }
         }
         
         function addRoom() {
             roomCounter++;
-            const roomId = `room${roomCounter}`;
+            const roomId = 'room' + roomCounter;
             const container = document.getElementById('roomsContainer');
-            const removeBtn = roomCounter > 1 ? `<button class="remove-section-btn" data-section="${roomId}">Remove</button>` : '';
+            const removeBtn = roomCounter > 1 ? '<button class="remove-section-btn" data-section="' + roomId + '">Remove</button>' : '';
+            
+            debugLog('Adding room: ' + roomId);
             
             const roomSection = document.createElement('div');
             roomSection.className = 'room-section';
             roomSection.id = roomId;
-            roomSection.innerHTML = `
-                <div class="section-running-header">Section B: Interior — <span class="running-header-name">Room ${roomCounter}</span></div>
-                <div class="section-header">
-                    <h2>B.${roomCounter}: Room ${roomCounter}</h2>
-                    ${removeBtn}
-                </div>
-                <div class="form-group">
-                    <label for="${roomId}_name">Room Name/Number: *</label>
-                    <input type="text" id="${roomId}_name" placeholder="e.g., Main Hall, Kitchen, Room 201" onchange="updateRunningHeader(this, '${roomId}')">
-                </div>
-                <div class="form-group">
-                    <label>Preservation Zone:</label>
-                    <div class="radio-group">
-                        <div class="radio-item">
-                            <input type="radio" id="${roomId}_pres" name="${roomId}_zone" value="preservation">
-                            <label for="${roomId}_pres">Preservation</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="${roomId}_rest" name="${roomId}_zone" value="restoration">
-                            <label for="${roomId}_rest">Restoration</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="${roomId}_adapt" name="${roomId}_zone" value="adaptive">
-                            <label for="${roomId}_adapt">Adaptive Reuse</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="${roomId}_condition">Overall Condition:</label>
-                    <select id="${roomId}_condition">
-                        <option value="">Select condition</option>
-                        <option value="good">Good</option>
-                        <option value="fair">Fair</option>
-                        <option value="poor">Poor</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Deficiencies Observed:</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_crack" name="${roomId}_deficiency">
-                            <label for="${roomId}_crack">Cracking</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_stain" name="${roomId}_deficiency">
-                            <label for="${roomId}_stain">Staining</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_water" name="${roomId}_deficiency">
-                            <label for="${roomId}_water">Water Damage</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_peel" name="${roomId}_deficiency">
-                            <label for="${roomId}_peel">Peeling/Flaking</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_loose" name="${roomId}_deficiency">
-                            <label for="${roomId}_loose">Loose/Detached</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_decay" name="${roomId}_deficiency">
-                            <label for="${roomId}_decay">Decay/Rot</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_corrosion" name="${roomId}_deficiency">
-                            <label for="${roomId}_corrosion">Corrosion</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_missing" name="${roomId}_deficiency">
-                            <label for="${roomId}_missing">Missing Elements</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="${roomId}_urgency">Urgency Rating:</label>
-                    <select id="${roomId}_urgency">
-                        <option value="">Select urgency</option>
-                        <option value="minor">Minor (5-10 years)</option>
-                        <option value="urgent">Urgent (1-5 years)</option>
-                        <option value="critical">Critical (within 1 year)</option>
-                    </select>
-                    <div class="help-text">Based on 10-year look-ahead</div>
-                </div>
-                <div class="form-group">
-                    <label>Required Treatment:</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_monitor" name="${roomId}_treatment">
-                            <label for="${roomId}_monitor">Continue Monitoring</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_treat" name="${roomId}_treatment">
-                            <label for="${roomId}_treat">Treatment Required</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${roomId}_maintain" name="${roomId}_treatment">
-                            <label for="${roomId}_maintain">Recurring Maintenance</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="${roomId}_change">Change Since Last Assessment:</label>
-                    <select id="${roomId}_change">
-                        <option value="">Select change status</option>
-                        <option value="no_change">No Change</option>
-                        <option value="improved">Improved</option>
-                        <option value="deteriorated">Deteriorated</option>
-                        <option value="new_damage">New Damage</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="${roomId}_notes">Condition Notes & Deficiencies:</label>
-                    <textarea id="${roomId}_notes" placeholder="Describe condition of: walls, floors, ceiling, windows, doors, fixtures, finishes, decorative elements. Note any deficiencies, causes if known, and recommended treatments."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>📷 Room Photos:</label>
-                    <div class="photo-upload">
-                        <input type="file" id="${roomId}_photos" accept="image/*" multiple data-preview="${roomId}_preview">
-                        <button type="button" class="photo-btn" data-input="${roomId}_photos">📷 Add Photos</button>
-                    </div>
-                    <div id="${roomId}_preview" class="photo-preview"></div>
-                </div>
-            `;
+            roomSection.innerHTML = '<div class="section-running-header"></div>' +
+                '<div class="section-header">' +
+                    '<h2>B.' + roomCounter + ': Room ' + roomCounter + '</h2>' +
+                    removeBtn +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + roomId + '_name">Room Name/Number: *</label>' +
+                    '<input type="text" id="' + roomId + '_name" placeholder="e.g., Main Hall, Kitchen, Room 201" onchange="updateRunningHeader(this, \'' + roomId + '\')">' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>Preservation Zone:</label>' +
+                    '<div class="radio-group">' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="' + roomId + '_pres" name="' + roomId + '_zone" value="preservation">' +
+                            '<label for="' + roomId + '_pres">Preservation</label>' +
+                        '</div>' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="' + roomId + '_rest" name="' + roomId + '_zone" value="restoration">' +
+                            '<label for="' + roomId + '_rest">Restoration</label>' +
+                        '</div>' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="' + roomId + '_adapt" name="' + roomId + '_zone" value="adaptive">' +
+                            '<label for="' + roomId + '_adapt">Adaptive Reuse</label>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + roomId + '_condition">Overall Condition:</label>' +
+                    '<select id="' + roomId + '_condition">' +
+                        '<option value="">Select condition</option>' +
+                        '<option value="good">Good</option>' +
+                        '<option value="fair">Fair</option>' +
+                        '<option value="poor">Poor</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>Deficiencies Observed:</label>' +
+                    '<div class="checkbox-group">' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_crack" name="' + roomId + '_deficiency"><label for="' + roomId + '_crack">Cracking</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_stain" name="' + roomId + '_deficiency"><label for="' + roomId + '_stain">Staining</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_water" name="' + roomId + '_deficiency"><label for="' + roomId + '_water">Water Damage</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_peel" name="' + roomId + '_deficiency"><label for="' + roomId + '_peel">Peeling/Flaking</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_loose" name="' + roomId + '_deficiency"><label for="' + roomId + '_loose">Loose/Detached</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_decay" name="' + roomId + '_deficiency"><label for="' + roomId + '_decay">Decay/Rot</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_corrosion" name="' + roomId + '_deficiency"><label for="' + roomId + '_corrosion">Corrosion</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_missing" name="' + roomId + '_deficiency"><label for="' + roomId + '_missing">Missing Elements</label></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + roomId + '_urgency">Urgency Rating:</label>' +
+                    '<select id="' + roomId + '_urgency">' +
+                        '<option value="">Select urgency</option>' +
+                        '<option value="minor">Minor (5-10 years)</option>' +
+                        '<option value="urgent">Urgent (1-5 years)</option>' +
+                        '<option value="critical">Critical (within 1 year)</option>' +
+                    '</select>' +
+                    '<div class="help-text">Based on 10-year look-ahead</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>Required Treatment:</label>' +
+                    '<div class="checkbox-group">' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_monitor" name="' + roomId + '_treatment"><label for="' + roomId + '_monitor">Continue Monitoring</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_treat" name="' + roomId + '_treatment"><label for="' + roomId + '_treat">Treatment Required</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + roomId + '_maintain" name="' + roomId + '_treatment"><label for="' + roomId + '_maintain">Recurring Maintenance</label></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + roomId + '_change">Change Since Last Assessment:</label>' +
+                    '<select id="' + roomId + '_change">' +
+                        '<option value="">Select change status</option>' +
+                        '<option value="no_change">No Change</option>' +
+                        '<option value="improved">Improved</option>' +
+                        '<option value="deteriorated">Deteriorated</option>' +
+                        '<option value="new_damage">New Damage</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + roomId + '_notes">Condition Notes & Deficiencies:</label>' +
+                    '<textarea id="' + roomId + '_notes" placeholder="Describe condition of: walls, floors, ceiling, windows, doors, fixtures, finishes, decorative elements. Note any deficiencies, causes if known, and recommended treatments."></textarea>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>📷 Room Photos:</label>' +
+                    '<div class="photo-upload">' +
+                        '<input type="file" id="' + roomId + '_photos" accept="image/*" multiple data-preview="' + roomId + '_preview">' +
+                        '<button type="button" class="photo-btn" data-input="' + roomId + '_photos">📷 Add Photos</button>' +
+                    '</div>' +
+                    '<div class="photo-group-label" id="' + roomId + '_photo_label"></div>' +
+                    '<div id="' + roomId + '_preview" class="photo-preview"></div>' +
+                '</div>';
             container.appendChild(roomSection);
             
             if (roomCounter > 1) {
@@ -1650,18 +2129,17 @@
                     }
                 });
                 
-                // Update button text after second room is added
                 document.getElementById('addRoomBtn').textContent = '➕ Add Another Room';
             }
             
             setupPhotoButtons();
+            updateAllRunningHeaders();
         }
         
         function renumberRooms() {
             const rooms = document.querySelectorAll('.room-section');
             roomCounter = rooms.length;
             
-            // Update button text based on room count
             const addBtn = document.getElementById('addRoomBtn');
             if (addBtn) {
                 addBtn.textContent = roomCounter > 1 ? '➕ Add Another Room' : '➕ Add Room';
@@ -1671,10 +2149,9 @@
                 const num = index + 1;
                 const header = room.querySelector('.section-header h2');
                 if (header) {
-                    header.textContent = `B.${num}: Room ${num}`;
+                    header.textContent = 'B.' + num + ': Room ' + num;
                 }
                 
-                // Update remove button visibility (first room shouldn't have remove)
                 const removeBtn = room.querySelector('.remove-section-btn');
                 if (num === 1 && removeBtn) {
                     removeBtn.style.display = 'none';
@@ -1686,142 +2163,110 @@
         
         function addFacade() {
             facadeCounter++;
-            const facadeId = `facade${facadeCounter}`;
+            const facadeId = 'facade' + facadeCounter;
             const container = document.getElementById('facadesContainer');
-            const removeBtn = facadeCounter > 1 ? `<button class="remove-section-btn" data-section="${facadeId}">Remove</button>` : '';
+            const removeBtn = facadeCounter > 1 ? '<button class="remove-section-btn" data-section="' + facadeId + '">Remove</button>' : '';
+            
+            debugLog('Adding facade: ' + facadeId);
             
             const facadeSection = document.createElement('div');
             facadeSection.className = 'facade-section';
             facadeSection.id = facadeId;
-            facadeSection.innerHTML = `
-                <div class="section-running-header">Section C: Exterior — <span class="running-header-name">Façade ${facadeCounter}</span></div>
-                <div class="section-header">
-                    <h2>C.${facadeCounter}: Façade ${facadeCounter}</h2>
-                    ${removeBtn}
-                </div>
-                <div class="form-group">
-                    <label for="${facadeId}_facing">Facing Direction:</label>
-                    <select id="${facadeId}_facing" onchange="updateFacadeRunningHeader(this, '${facadeId}')">
-                        <option value="">Select direction</option>
-                        <option value="North">North</option>
-                        <option value="South">South</option>
-                        <option value="East">East</option>
-                        <option value="West">West</option>
-                        <option value="Northeast">Northeast</option>
-                        <option value="Northwest">Northwest</option>
-                        <option value="Southeast">Southeast</option>
-                        <option value="Southwest">Southwest</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Preservation Zone:</label>
-                    <div class="radio-group">
-                        <div class="radio-item">
-                            <input type="radio" id="${facadeId}_pres" name="${facadeId}_zone" value="preservation">
-                            <label for="${facadeId}_pres">Preservation</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="${facadeId}_rest" name="${facadeId}_zone" value="restoration">
-                            <label for="${facadeId}_rest">Restoration</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="${facadeId}_condition">Overall Condition:</label>
-                    <select id="${facadeId}_condition">
-                        <option value="">Select condition</option>
-                        <option value="good">Good</option>
-                        <option value="fair">Fair</option>
-                        <option value="poor">Poor</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Deficiencies Observed:</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_crack" name="${facadeId}_deficiency">
-                            <label for="${facadeId}_crack">Cracking</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_stain" name="${facadeId}_deficiency">
-                            <label for="${facadeId}_stain">Staining</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_water" name="${facadeId}_deficiency">
-                            <label for="${facadeId}_water">Water Damage</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_spall" name="${facadeId}_deficiency">
-                            <label for="${facadeId}_spall">Spalling</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_efflor" name="${facadeId}_deficiency">
-                            <label for="${facadeId}_efflor">Efflorescence</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_point" name="${facadeId}_deficiency">
-                            <label for="${facadeId}_point">Failed Pointing</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_corrosion" name="${facadeId}_deficiency">
-                            <label for="${facadeId}_corrosion">Corrosion</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_missing" name="${facadeId}_deficiency">
-                            <label for="${facadeId}_missing">Missing Elements</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="${facadeId}_urgency">Urgency Rating:</label>
-                    <select id="${facadeId}_urgency">
-                        <option value="">Select urgency</option>
-                        <option value="minor">Minor (5-10 years)</option>
-                        <option value="urgent">Urgent (1-5 years)</option>
-                        <option value="critical">Critical (within 1 year)</option>
-                    </select>
-                    <div class="help-text">Based on 10-year look-ahead</div>
-                </div>
-                <div class="form-group">
-                    <label>Required Treatment:</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_monitor" name="${facadeId}_treatment">
-                            <label for="${facadeId}_monitor">Continue Monitoring</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_treat" name="${facadeId}_treatment">
-                            <label for="${facadeId}_treat">Treatment Required</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="${facadeId}_maintain" name="${facadeId}_treatment">
-                            <label for="${facadeId}_maintain">Recurring Maintenance</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="${facadeId}_change">Change Since Last Assessment:</label>
-                    <select id="${facadeId}_change">
-                        <option value="">Select change status</option>
-                        <option value="no_change">No Change</option>
-                        <option value="improved">Improved</option>
-                        <option value="deteriorated">Deteriorated</option>
-                        <option value="new_damage">New Damage</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="${facadeId}_notes">Condition Notes & Deficiencies:</label>
-                    <textarea id="${facadeId}_notes" placeholder="Describe condition of: exterior walls, masonry, stucco, paint, windows, doors, roofing, rainwater goods, decorative elements. Note any deficiencies, causes if known, and recommended treatments."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>📷 Façade Photos:</label>
-                    <div class="photo-upload">
-                        <input type="file" id="${facadeId}_photos" accept="image/*" multiple data-preview="${facadeId}_preview">
-                        <button type="button" class="photo-btn" data-input="${facadeId}_photos">📷 Add Photos</button>
-                    </div>
-                    <div id="${facadeId}_preview" class="photo-preview"></div>
-                </div>
-            `;
+            facadeSection.innerHTML = '<div class="section-running-header"></div>' +
+                '<div class="section-header">' +
+                    '<h2>C.' + facadeCounter + ': Façade ' + facadeCounter + '</h2>' +
+                    removeBtn +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + facadeId + '_facing">Facing Direction:</label>' +
+                    '<select id="' + facadeId + '_facing" onchange="updateFacadeRunningHeader(this, \'' + facadeId + '\')">' +
+                        '<option value="">Select direction</option>' +
+                        '<option value="North">North</option>' +
+                        '<option value="South">South</option>' +
+                        '<option value="East">East</option>' +
+                        '<option value="West">West</option>' +
+                        '<option value="Northeast">Northeast</option>' +
+                        '<option value="Northwest">Northwest</option>' +
+                        '<option value="Southeast">Southeast</option>' +
+                        '<option value="Southwest">Southwest</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>Preservation Zone:</label>' +
+                    '<div class="radio-group">' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="' + facadeId + '_pres" name="' + facadeId + '_zone" value="preservation">' +
+                            '<label for="' + facadeId + '_pres">Preservation</label>' +
+                        '</div>' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="' + facadeId + '_rest" name="' + facadeId + '_zone" value="restoration">' +
+                            '<label for="' + facadeId + '_rest">Restoration</label>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + facadeId + '_condition">Overall Condition:</label>' +
+                    '<select id="' + facadeId + '_condition">' +
+                        '<option value="">Select condition</option>' +
+                        '<option value="good">Good</option>' +
+                        '<option value="fair">Fair</option>' +
+                        '<option value="poor">Poor</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>Deficiencies Observed:</label>' +
+                    '<div class="checkbox-group">' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_crack" name="' + facadeId + '_deficiency"><label for="' + facadeId + '_crack">Cracking</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_stain" name="' + facadeId + '_deficiency"><label for="' + facadeId + '_stain">Staining</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_water" name="' + facadeId + '_deficiency"><label for="' + facadeId + '_water">Water Damage</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_spall" name="' + facadeId + '_deficiency"><label for="' + facadeId + '_spall">Spalling</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_efflor" name="' + facadeId + '_deficiency"><label for="' + facadeId + '_efflor">Efflorescence</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_point" name="' + facadeId + '_deficiency"><label for="' + facadeId + '_point">Failed Pointing</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_corrosion" name="' + facadeId + '_deficiency"><label for="' + facadeId + '_corrosion">Corrosion</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_missing" name="' + facadeId + '_deficiency"><label for="' + facadeId + '_missing">Missing Elements</label></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + facadeId + '_urgency">Urgency Rating:</label>' +
+                    '<select id="' + facadeId + '_urgency">' +
+                        '<option value="">Select urgency</option>' +
+                        '<option value="minor">Minor (5-10 years)</option>' +
+                        '<option value="urgent">Urgent (1-5 years)</option>' +
+                        '<option value="critical">Critical (within 1 year)</option>' +
+                    '</select>' +
+                    '<div class="help-text">Based on 10-year look-ahead</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>Required Treatment:</label>' +
+                    '<div class="checkbox-group">' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_monitor" name="' + facadeId + '_treatment"><label for="' + facadeId + '_monitor">Continue Monitoring</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_treat" name="' + facadeId + '_treatment"><label for="' + facadeId + '_treat">Treatment Required</label></div>' +
+                        '<div class="checkbox-item"><input type="checkbox" id="' + facadeId + '_maintain" name="' + facadeId + '_treatment"><label for="' + facadeId + '_maintain">Recurring Maintenance</label></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + facadeId + '_change">Change Since Last Assessment:</label>' +
+                    '<select id="' + facadeId + '_change">' +
+                        '<option value="">Select change status</option>' +
+                        '<option value="no_change">No Change</option>' +
+                        '<option value="improved">Improved</option>' +
+                        '<option value="deteriorated">Deteriorated</option>' +
+                        '<option value="new_damage">New Damage</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label for="' + facadeId + '_notes">Condition Notes & Deficiencies:</label>' +
+                    '<textarea id="' + facadeId + '_notes" placeholder="Describe condition of: exterior walls, masonry, stucco, paint, windows, doors, roofing, rainwater goods, decorative elements. Note any deficiencies, causes if known, and recommended treatments."></textarea>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>📷 Façade Photos:</label>' +
+                    '<div class="photo-upload">' +
+                        '<input type="file" id="' + facadeId + '_photos" accept="image/*" multiple data-preview="' + facadeId + '_preview">' +
+                        '<button type="button" class="photo-btn" data-input="' + facadeId + '_photos">📷 Add Photos</button>' +
+                    '</div>' +
+                    '<div class="photo-group-label" id="' + facadeId + '_photo_label"></div>' +
+                    '<div id="' + facadeId + '_preview" class="photo-preview"></div>' +
+                '</div>';
             container.appendChild(facadeSection);
             
             if (facadeCounter > 1) {
@@ -1833,18 +2278,17 @@
                     }
                 });
                 
-                // Update button text after second facade is added
                 document.getElementById('addFacadeBtn').textContent = '➕ Add Another Façade';
             }
             
             setupPhotoButtons();
+            updateAllRunningHeaders();
         }
         
         function renumberFacades() {
             const facades = document.querySelectorAll('.facade-section');
             facadeCounter = facades.length;
             
-            // Update button text based on facade count
             const addBtn = document.getElementById('addFacadeBtn');
             if (addBtn) {
                 addBtn.textContent = facadeCounter > 1 ? '➕ Add Another Façade' : '➕ Add Façade';
@@ -1854,10 +2298,9 @@
                 const num = index + 1;
                 const header = facade.querySelector('.section-header h2');
                 if (header) {
-                    header.textContent = `C.${num}: Façade ${num}`;
+                    header.textContent = 'C.' + num + ': Façade ' + num;
                 }
                 
-                // Update remove button visibility (first facade shouldn't have remove)
                 const removeBtn = facade.querySelector('.remove-section-btn');
                 if (num === 1 && removeBtn) {
                     removeBtn.style.display = 'none';
