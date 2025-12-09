@@ -564,17 +564,58 @@
             }
             
             /* Print header on each page - use running header approach */
-            .print-header, .print-footer {
-                display: none !important;
+            .print-header {
+                display: block !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 20px;
+                padding: 5px 0.5in;
+                font-size: 9px;
+                color: #666;
+                text-align: center;
+                border-bottom: 1px solid #ccc;
+                background: white;
+            }
+            
+            .print-footer {
+                display: block !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 20px;
+                padding: 5px 0.5in;
+                font-size: 9px;
+                color: #666;
+                border-top: 1px solid #ccc;
+                background: white;
+                display: flex !important;
+                justify-content: space-between;
+            }
+            
+            .print-footer .left {
+                text-align: left;
+            }
+            
+            .print-footer .right {
+                text-align: right;
+            }
+            
+            /* Add margin to content to account for fixed header/footer */
+            .container {
+                margin-top: 30px !important;
+                margin-bottom: 30px !important;
             }
             
             @page {
-                margin: 0.75in 0.5in;
+                margin: 0.5in 0.5in 0.6in 0.5in;
                 size: letter;
-            }
-            
-            @page:first {
-                margin-top: 0.5in;
+                
+                @bottom-right {
+                    content: counter(page);
+                }
             }
         }
         
@@ -599,7 +640,8 @@
     
     <!-- Print Footer (appears on every printed page) -->
     <div class="print-footer">
-        Assessment Date: <span id="printDate"></span>
+        <span class="left">Assessment Date: <span id="printDate"></span></span>
+        <span class="right">Heritage Property Conditions Assessment</span>
     </div>
     
     <div class="save-indicator saved">
