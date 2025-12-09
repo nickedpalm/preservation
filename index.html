@@ -356,6 +356,11 @@
             display: none;
         }
         
+        /* Section running headers - hidden on screen, visible in print */
+        .section-running-header {
+            display: none;
+        }
+        
         /* Print styles */
         @media print {
             body { 
@@ -613,6 +618,30 @@
             
             .print-footer .right {
                 text-align: right;
+            }
+            
+            /* Section running headers - show at top of each section page */
+            .section-running-header {
+                display: block !important;
+                position: running(sectionHeader);
+                font-size: 9px;
+                color: #666;
+                padding: 4px 0;
+                border-bottom: 1px solid #ddd;
+                margin-bottom: 10px;
+                font-weight: 500;
+            }
+            
+            /* Alternative: inline section headers that repeat */
+            .room-section .section-running-header,
+            .facade-section .section-running-header {
+                display: block !important;
+                font-size: 9px;
+                color: #1a5276;
+                background: #eaf2f8;
+                padding: 4px 8px;
+                margin: -10px -10px 10px -10px;
+                border-bottom: 1px solid #aed6f1;
             }
             
             /* Add margin to content to account for fixed header/footer */
@@ -979,6 +1008,26 @@
             document.getElementById('printPropertyName').textContent = propertyName;
             document.getElementById('printDate').textContent = assessmentDate;
             
+            // Update all room running headers
+            document.querySelectorAll('.room-section').forEach(function(section) {
+                const nameInput = section.querySelector('input[id$="_name"]');
+                const header = section.querySelector('.running-header-name');
+                if (header && nameInput) {
+                    header.textContent = nameInput.value || 'Room ' + section.id.replace('room', '');
+                }
+            });
+            
+            // Update all facade running headers
+            document.querySelectorAll('.facade-section').forEach(function(section) {
+                const facingSelect = section.querySelector('select[id$="_facing"]');
+                const header = section.querySelector('.running-header-name');
+                if (header && facingSelect) {
+                    const direction = facingSelect.options[facingSelect.selectedIndex]?.text || '';
+                    const num = section.id.replace('facade', '');
+                    header.textContent = (direction && direction !== 'Select direction') ? direction + ' Façade' : 'Façade ' + num;
+                }
+            });
+            
             // Mark empty sections to hide in print
             markEmptySections();
             
@@ -1057,14 +1106,27 @@
         
         function triggerAutoSave() {
             const indicator = document.querySelector('.save-indicator');
+            const iconEl = indicator.querySelector('.icon');
+            const textEl = indicator.querySelector('div div');
+            
             indicator.className = 'save-indicator saving';
-            indicator.querySelector('div div').textContent = 'Saving...';
+            if (iconEl) iconEl.textContent = '↻';
+            if (textEl) textEl.textContent = 'Saving...';
+            
             clearTimeout(autoSaveTimeout);
             autoSaveTimeout = setTimeout(function() {
-                saveFormData();
-                indicator.className = 'save-indicator saved';
-                indicator.querySelector('div div').textContent = 'Saved';
-                lastSaveTime = new Date();
+                try {
+                    saveFormData();
+                    indicator.className = 'save-indicator saved';
+                    if (iconEl) iconEl.textContent = '✓';
+                    if (textEl) textEl.textContent = 'Saved';
+                    lastSaveTime = new Date();
+                } catch (e) {
+                    console.error('Save error:', e);
+                    indicator.className = 'save-indicator saved';
+                    if (iconEl) iconEl.textContent = '✓';
+                    if (textEl) textEl.textContent = 'Saved';
+                }
             }, 1000);
         }
         
@@ -1135,10 +1197,15 @@
         }
         
         function exportData() {
-            saveFormData();
+            try {
+                saveFormData();
+            } catch (e) {
+                console.error('Save before export failed:', e);
+            }
+            
             const data = localStorage.getItem('assessmentForm');
             if (!data) {
-                alert('No data to export.');
+                alert('No data to export. Please fill in some form fields first.');
                 return;
             }
             
@@ -1146,20 +1213,26 @@
             const date = new Date().toISOString().split('T')[0];
             const filename = `${propertyName.replace(/[^a-z0-9]/gi, '_')}_${date}.json`;
             
-            // Try modern approach first
+            console.log('Exporting data:', filename, data.length, 'bytes');
+            
+            // Try modern share API first (iOS)
             if (navigator.share && navigator.canShare) {
-                const file = new File([data], filename, { type: 'application/json' });
-                if (navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        files: [file],
-                        title: 'Assessment Data Export'
-                    }).then(() => {
-                        console.log('Shared successfully');
-                    }).catch((err) => {
-                        console.log('Share failed, falling back', err);
-                        fallbackExport(data, filename);
-                    });
-                    return;
+                try {
+                    const file = new File([data], filename, { type: 'application/json' });
+                    if (navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: 'Assessment Data Export'
+                        }).then(() => {
+                            console.log('Shared successfully');
+                        }).catch((err) => {
+                            console.log('Share failed, falling back', err);
+                            fallbackExport(data, filename);
+                        });
+                        return;
+                    }
+                } catch (e) {
+                    console.log('Share API error:', e);
                 }
             }
             
@@ -1167,29 +1240,35 @@
         }
         
         function fallbackExport(data, filename) {
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            // For iOS Safari, open in new window
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (isIOS) {
-                // Open blob URL in new tab - user can long-press to save
-                const newWindow = window.open(url, '_blank');
-                if (newWindow) {
-                    alert('✅ Data opened in new tab. Long-press and select "Download Linked File" to save.');
+            try {
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                // For iOS Safari, open in new window
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                if (isIOS) {
+                    // Open blob URL in new tab - user can long-press to save
+                    const newWindow = window.open(url, '_blank');
+                    if (newWindow) {
+                        alert('✅ Data opened in new tab.\\n\\nTo save: Long-press and select "Download Linked File"');
+                    } else {
+                        // Popup blocked - show data for copy
+                        const copyData = prompt('Popup blocked. Copy this data manually:', data.substring(0, 1000) + '...');
+                    }
                 } else {
-                    // Fallback: show data in textarea for copy
-                    prompt('Copy this data to save:', data);
+                    // Desktop - standard download
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 100);
+                    alert('✅ Data exported successfully!');
                 }
-            } else {
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert('✅ Data exported successfully!');
+            } catch (e) {
+                console.error('Export error:', e);
+                alert('Export failed: ' + e.message);
             }
         }
         
@@ -1377,6 +1456,30 @@
             setTimeout(function() { event.target.value = ''; }, 100);
         }
         
+        // Update running header when room name changes
+        function updateRunningHeader(input, roomId) {
+            const section = document.getElementById(roomId);
+            if (section) {
+                const header = section.querySelector('.running-header-name');
+                if (header) {
+                    header.textContent = input.value || 'Room ' + roomId.replace('room', '');
+                }
+            }
+        }
+        
+        // Update running header when facade direction changes
+        function updateFacadeRunningHeader(select, facadeId) {
+            const section = document.getElementById(facadeId);
+            if (section) {
+                const header = section.querySelector('.running-header-name');
+                if (header) {
+                    const direction = select.value || '';
+                    const num = facadeId.replace('facade', '');
+                    header.textContent = direction ? direction + ' Façade' : 'Façade ' + num;
+                }
+            }
+        }
+        
         function addPhotoDirectly(imageSrc, preview, caption) {
             const photoItem = document.createElement('div');
             photoItem.className = 'photo-item';
@@ -1414,13 +1517,14 @@
             roomSection.className = 'room-section';
             roomSection.id = roomId;
             roomSection.innerHTML = `
+                <div class="section-running-header">Section B: Interior — <span class="running-header-name">Room ${roomCounter}</span></div>
                 <div class="section-header">
                     <h2>B.${roomCounter}: Room ${roomCounter}</h2>
                     ${removeBtn}
                 </div>
                 <div class="form-group">
                     <label for="${roomId}_name">Room Name/Number: *</label>
-                    <input type="text" id="${roomId}_name" placeholder="e.g., Main Hall, Kitchen, Room 201">
+                    <input type="text" id="${roomId}_name" placeholder="e.g., Main Hall, Kitchen, Room 201" onchange="updateRunningHeader(this, '${roomId}')">
                 </div>
                 <div class="form-group">
                     <label>Preservation Zone:</label>
@@ -1590,22 +1694,23 @@
             facadeSection.className = 'facade-section';
             facadeSection.id = facadeId;
             facadeSection.innerHTML = `
+                <div class="section-running-header">Section C: Exterior — <span class="running-header-name">Façade ${facadeCounter}</span></div>
                 <div class="section-header">
                     <h2>C.${facadeCounter}: Façade ${facadeCounter}</h2>
                     ${removeBtn}
                 </div>
                 <div class="form-group">
                     <label for="${facadeId}_facing">Facing Direction:</label>
-                    <select id="${facadeId}_facing">
+                    <select id="${facadeId}_facing" onchange="updateFacadeRunningHeader(this, '${facadeId}')">
                         <option value="">Select direction</option>
-                        <option value="north">North</option>
-                        <option value="south">South</option>
-                        <option value="east">East</option>
-                        <option value="west">West</option>
-                        <option value="northeast">Northeast</option>
-                        <option value="northwest">Northwest</option>
-                        <option value="southeast">Southeast</option>
-                        <option value="southwest">Southwest</option>
+                        <option value="North">North</option>
+                        <option value="South">South</option>
+                        <option value="East">East</option>
+                        <option value="West">West</option>
+                        <option value="Northeast">Northeast</option>
+                        <option value="Northwest">Northwest</option>
+                        <option value="Southeast">Southeast</option>
+                        <option value="Southwest">Southwest</option>
                     </select>
                 </div>
                 <div class="form-group">
