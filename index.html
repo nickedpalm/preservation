@@ -381,17 +381,16 @@
                 padding-left: 0 !important;
                 outline: none !important;
                 resize: none !important;
-                overflow: visible !important;
-                height: auto !important;
             }
             
-            /* Make textareas expand to show all content */
+            /* Make textareas expand to show all content - override inline styles */
             textarea {
                 height: auto !important;
-                min-height: 0 !important;
+                min-height: 20px !important;
                 max-height: none !important;
                 overflow: visible !important;
                 white-space: pre-wrap !important;
+                field-sizing: content !important;
             }
             
             /* Hide placeholder text in print */
@@ -985,8 +984,14 @@
             
             // Auto-expand all textareas to show full content
             document.querySelectorAll('textarea').forEach(function(textarea) {
+                // Store original style
+                textarea.dataset.originalStyle = textarea.getAttribute('style') || '';
+                // Reset height constraints and set to content height
                 textarea.style.height = 'auto';
-                textarea.style.height = textarea.scrollHeight + 'px';
+                textarea.style.minHeight = '0';
+                textarea.style.maxHeight = 'none';
+                textarea.style.overflow = 'visible';
+                textarea.style.height = (textarea.scrollHeight + 5) + 'px';
             });
         });
         
@@ -996,9 +1001,13 @@
                 section.classList.remove('empty-section');
             });
             
-            // Reset textarea heights
+            // Reset textarea styles to original
             document.querySelectorAll('textarea').forEach(function(textarea) {
-                textarea.style.height = '';
+                if (textarea.dataset.originalStyle) {
+                    textarea.setAttribute('style', textarea.dataset.originalStyle);
+                } else {
+                    textarea.removeAttribute('style');
+                }
             });
         });
         
