@@ -374,11 +374,24 @@
             .section-break .warning-box { display: block !important; }
             
             /* Remove borders from form elements in print */
-            textarea, input[type="text"], select {
+            textarea, input[type="text"], input[type="date"], select {
                 border: none !important;
                 background: transparent !important;
                 box-shadow: none !important;
                 padding-left: 0 !important;
+                outline: none !important;
+                resize: none !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+            
+            /* Make textareas expand to show all content */
+            textarea {
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                overflow: visible !important;
+                white-space: pre-wrap !important;
             }
             
             /* Hide placeholder text in print */
@@ -388,7 +401,7 @@
             
             /* For empty textareas, show a minimum height so it's clear the field exists */
             textarea:placeholder-shown {
-                min-height: 40px;
+                min-height: 30px !important;
                 border-bottom: 1px solid #ccc !important;
             }
             
@@ -969,12 +982,23 @@
             
             // Mark empty sections to hide in print
             markEmptySections();
+            
+            // Auto-expand all textareas to show full content
+            document.querySelectorAll('textarea').forEach(function(textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            });
         });
         
         // Restore sections after print (in case user continues editing)
         window.addEventListener('afterprint', function() {
             document.querySelectorAll('.empty-section').forEach(section => {
                 section.classList.remove('empty-section');
+            });
+            
+            // Reset textarea heights
+            document.querySelectorAll('textarea').forEach(function(textarea) {
+                textarea.style.height = '';
             });
         });
         
