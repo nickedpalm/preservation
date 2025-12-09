@@ -419,6 +419,94 @@
             /* Section A should NOT have a page break before it */
             .section-a-container {
                 page-break-before: auto;
+                page-break-inside: avoid;
+            }
+            
+            /* Compact print styles for entire document */
+            .container h1 {
+                font-size: 16px;
+                margin-bottom: 4px;
+            }
+            
+            .container h2 {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+            
+            .container h3 {
+                font-size: 12px;
+                margin: 8px 0 4px 0;
+            }
+            
+            .form-section {
+                margin-bottom: 10px;
+            }
+            
+            .form-group {
+                margin-bottom: 6px;
+            }
+            
+            label {
+                font-size: 11px;
+                margin-bottom: 2px;
+            }
+            
+            input, select, textarea {
+                font-size: 11px;
+                padding: 4px 0;
+                min-height: auto !important;
+            }
+            
+            textarea {
+                min-height: 30px !important;
+            }
+            
+            .info-box {
+                padding: 6px 10px;
+                font-size: 10px;
+                margin-bottom: 6px;
+            }
+            
+            .warning-box {
+                padding: 6px 10px;
+                font-size: 10px;
+                margin-bottom: 6px;
+            }
+            
+            .checkbox-group, .radio-group {
+                gap: 4px 15px;
+            }
+            
+            .checkbox-item label, .radio-item label {
+                font-size: 10px;
+            }
+            
+            .grid-2 {
+                gap: 8px 20px;
+            }
+            
+            .section-header h2 {
+                font-size: 13px;
+            }
+            
+            .room-section, .facade-section {
+                margin-top: 15px;
+                padding-top: 10px;
+            }
+            
+            .help-text {
+                font-size: 9px;
+            }
+            
+            /* Compact photo display */
+            .photo-item {
+                padding: 4px;
+                border-width: 1px;
+            }
+            
+            .photo-item .caption-display {
+                font-size: 10px;
+                padding: 4px 0;
             }
             
             /* Only break BEFORE 2nd+ room/facade, not the first one */
