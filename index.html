@@ -439,6 +439,11 @@
                 page-break-before: always;
             }
             
+            /* Keep Section A together - allow break only if absolutely necessary */
+            .section-a-container {
+                page-break-inside: avoid;
+            }
+            
             /* Prevent orphaned headers */
             h2 {
                 page-break-after: avoid;
@@ -566,119 +571,119 @@
         </div>
         
         <!-- SECTION A: Property Information & Initial Steps -->
-        <h2>Section A: Property Information & Initial Steps</h2>
-        
-        <div class="form-section">
-            <div class="grid-2">
+        <div class="section-a-container">
+            <h2>Section A: Property Information & Initial Steps</h2>
+            
+            <div class="form-section">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="propertyName">Property Name: *</label>
+                        <input type="text" id="propertyName" placeholder="Enter property name">
+                    </div>
+                    <div class="form-group">
+                        <label for="rpaNumber">RPA Number:</label>
+                        <input type="text" id="rpaNumber" placeholder="Enter RPA number">
+                    </div>
+                </div>
+                
                 <div class="form-group">
-                    <label for="propertyName">Property Name: *</label>
-                    <input type="text" id="propertyName" placeholder="Enter property name">
+                    <label for="propertyAddress">Property Address:</label>
+                    <textarea id="propertyAddress" placeholder="Full address including postal code" style="min-height: 60px;"></textarea>
                 </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="assessmentDate">Assessment Date: *</label>
+                        <input type="date" id="assessmentDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="assessor">Assessor Name & Role: *</label>
+                        <input type="text" id="assessor" placeholder="Name and role">
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="weather">Weather Conditions:</label>
+                        <select id="weather">
+                            <option value="">Select weather</option>
+                            <option value="sunny">☀️ Sunny</option>
+                            <option value="cloudy">☁️ Cloudy</option>
+                            <option value="rainy">🌧️ Rainy</option>
+                            <option value="snowy">❄️ Snowy</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="temperature">Temperature:</label>
+                        <input type="text" id="temperature" placeholder="e.g., 72°F / 22°C">
+                    </div>
+                </div>
+            
+                <!-- Heritage Status Questions -->
+                <h3>1. Heritage Status</h3>
+                <div class="info-box">
+                    Check OBO List of Significant Properties at: <br>
+                    <a href="https://usdos.sharepoint.com/sites/OBO-CH/SitePages/Historic-Facilities-Maintenance.aspx" target="_blank" style="word-break: break-all;">usdos.sharepoint.com/sites/OBO-CH</a>
+                </div>
+                
                 <div class="form-group">
-                    <label for="rpaNumber">RPA Number:</label>
-                    <input type="text" id="rpaNumber" placeholder="Enter RPA number">
+                    <label>Does the property appear in the OBO List of Significant Properties?</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="oboYes" name="oboList" value="yes">
+                            <label for="oboYes">Yes</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="oboNo" name="oboList" value="no">
+                            <label for="oboNo">No</label>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="propertyAddress">Property Address:</label>
-                <textarea id="propertyAddress" placeholder="Full address including postal code" style="min-height: 60px;"></textarea>
-            </div>
-            
-            <div class="grid-2">
+                
                 <div class="form-group">
-                    <label for="assessmentDate">Assessment Date: *</label>
-                    <input type="date" id="assessmentDate">
+                    <label>Listing Authority (if applicable):</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="secState" name="authority">
+                            <label for="secState">Secretary of State</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="unesco" name="authority">
+                            <label for="unesco">UNESCO/World Heritage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hostCountry" name="authority">
+                            <label for="hostCountry">Host Country</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="local" name="authority">
+                            <label for="local">Local Authority</label>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label for="assessor">Assessor Name & Role: *</label>
-                    <input type="text" id="assessor" placeholder="Name and role">
+                    <label>Available Documentation:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="css" name="docs">
+                            <label for="css">Cultural Significance Study (CSS)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hsr" name="docs">
+                            <label for="hsr">Historic Structure Report (HSR)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="clr" name="docs">
+                            <label for="clr">Cultural Landscape Report (CLR)</label>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="grid-2">
+                
                 <div class="form-group">
-                    <label for="weather">Weather Conditions:</label>
-                    <select id="weather">
-                        <option value="">Select weather</option>
-                        <option value="sunny">☀️ Sunny</option>
-                        <option value="cloudy">☁️ Cloudy</option>
-                        <option value="rainy">🌧️ Rainy</option>
-                        <option value="snowy">❄️ Snowy</option>
-                    </select>
+                    <label for="sectionANotes">Background Information & Notes:</label>
+                    <textarea id="sectionANotes" placeholder="Enter background information, significance, special considerations, references to CSS/HSR, etc."></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="temperature">Temperature:</label>
-                    <input type="text" id="temperature" placeholder="e.g., 72°F / 22°C">
-                </div>
-            </div>
-        </div>
-        
-        <!-- Heritage Status Questions -->
-        <div class="form-section">
-            <h3>1. Heritage Status</h3>
-            <div class="info-box">
-                Check OBO List of Significant Properties at: <br>
-                <a href="https://usdos.sharepoint.com/sites/OBO-CH/SitePages/Historic-Facilities-Maintenance.aspx" target="_blank" style="word-break: break-all;">usdos.sharepoint.com/sites/OBO-CH</a>
-            </div>
-            
-            <div class="form-group">
-                <label>Does the property appear in the OBO List of Significant Properties?</label>
-                <div class="radio-group">
-                    <div class="radio-item">
-                        <input type="radio" id="oboYes" name="oboList" value="yes">
-                        <label for="oboYes">Yes</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="oboNo" name="oboList" value="no">
-                        <label for="oboNo">No</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label>Listing Authority (if applicable):</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="secState" name="authority">
-                        <label for="secState">Secretary of State</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="unesco" name="authority">
-                        <label for="unesco">UNESCO/World Heritage</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="hostCountry" name="authority">
-                        <label for="hostCountry">Host Country</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="local" name="authority">
-                        <label for="local">Local Authority</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label>Available Documentation:</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="css" name="docs">
-                        <label for="css">Cultural Significance Study (CSS)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="hsr" name="docs">
-                        <label for="hsr">Historic Structure Report (HSR)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="clr" name="docs">
-                        <label for="clr">Cultural Landscape Report (CLR)</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="sectionANotes">Background Information & Notes:</label>
-                <textarea id="sectionANotes" placeholder="Enter background information, significance, special considerations, references to CSS/HSR, etc."></textarea>
             </div>
         </div>
         
