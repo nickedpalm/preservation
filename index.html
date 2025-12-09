@@ -1041,10 +1041,33 @@
         }
         
         function importData() {
-            if (!confirm('Import data? This will replace current form data.')) return;
-            document.getElementById('importFile').click();
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            if (isIOS) {
+                // On iOS, show a modal with the file input visible
+                const modal = document.createElement('div');
+                modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;';
+                modal.innerHTML = `
+                    <div style="background:white;padding:30px;border-radius:12px;text-align:center;max-width:90%;margin:20px;">
+                        <h3 style="margin-top:0;">Import Assessment Data</h3>
+                        <p>Select your saved .json file:</p>
+                        <input type="file" id="iosImportFile" accept=".json,application/json" style="margin:15px 0;font-size:16px;">
+                        <br>
+                        <button onclick="this.closest('div').parentElement.remove();" style="padding:12px 24px;font-size:16px;margin-top:10px;">Cancel</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                document.getElementById('iosImportFile').addEventListener('change', function(e) {
+                    handleImport(e);
+                    modal.remove();
+                });
+            } else {
+                if (!confirm('Import data? This will replace current form data.')) return;
+                document.getElementById('importFile').click();
+            }
         }
-        
+
         function handleImport(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1053,13 +1076,16 @@
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    if (!data.data) throw new Error('Invalid file');
+                    if (!data.data) throw new Error('Invalid file format');
                     localStorage.setItem('assessmentForm', e.target.result);
                     alert('✅ Data imported! Reloading...');
                     setTimeout(function() { location.reload(); }, 500);
                 } catch (error) {
-                    alert('❌ Error: ' + error.message);
+                    alert('❌ Error importing: ' + error.message);
                 }
+            };
+            reader.onerror = function() {
+                alert('❌ Error reading file');
             };
             reader.readAsText(file);
             event.target.value = '';
