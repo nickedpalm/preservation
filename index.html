@@ -354,11 +354,33 @@
             margin-top: 4px;
         }
         
+        /* Section breaks for print */
+        .section-break {
+            page-break-before: always;
+        }
+        
+        /* Print header/footer - hidden on screen */
+        .print-header, .print-footer {
+            display: none;
+        }
+        
         /* Print styles */
         @media print {
-            body { background: white; padding: 0; }
+            body { 
+                background: white; 
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
             .container { box-shadow: none; padding: 20px; max-width: 100%; }
             .buttons, .photo-upload, .photo-item button, .remove-section-btn, .add-section-btn, .save-indicator { display: none !important; }
+            
+            /* Hide the auto-save warning box in print (first one only) */
+            .container > p + .warning-box { display: none !important; }
+            
+            /* Keep Section D water damage warning visible */
+            .section-break .warning-box { display: block !important; }
+            
             .photo-preview { columns: 2; column-gap: 15px; }
             .photo-item { margin-bottom: 15px; display: inline-block; width: 100%; }
             .photo-item img { max-height: none; }
@@ -378,7 +400,99 @@
                 line-height: 1.4;
             }
             
-            @page { margin: 0.6in; size: letter; }
+            /* Page breaks for main sections */
+            .section-break {
+                page-break-before: always;
+            }
+            
+            .room-section, .facade-section, .summary-section {
+                page-break-before: always;
+            }
+            
+            /* Prevent orphaned headers */
+            h2 {
+                page-break-after: avoid;
+            }
+            
+            .form-section {
+                page-break-inside: avoid;
+            }
+            
+            /* Keep question and answer together - don't split across pages */
+            .form-group {
+                page-break-inside: avoid;
+            }
+            
+            /* For long textareas, allow breaks but keep label with content start */
+            .form-group:has(textarea) {
+                page-break-inside: auto;
+            }
+            
+            .form-group label {
+                page-break-after: avoid;
+            }
+            
+            textarea {
+                page-break-inside: auto;
+            }
+            
+            /* Keep photo sections together */
+            .photo-preview {
+                page-break-inside: avoid;
+            }
+            
+            /* Keep checkbox/radio groups together */
+            .checkbox-group, .radio-group {
+                page-break-inside: avoid;
+            }
+            
+            /* Hide empty sections in print */
+            .room-section.empty-section,
+            .facade-section.empty-section {
+                display: none !important;
+            }
+            
+            /* Print header on each page */
+            .print-header {
+                display: block !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 30px;
+                background: white;
+                border-bottom: 1px solid #ccc;
+                padding: 8px 20px;
+                font-size: 10px;
+                color: #666;
+                text-align: center;
+            }
+            
+            .print-footer {
+                display: block !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 25px;
+                background: white;
+                border-top: 1px solid #ccc;
+                padding: 5px 20px;
+                font-size: 10px;
+                color: #666;
+                text-align: center;
+            }
+            
+            /* Add padding to container to account for fixed header/footer */
+            .container {
+                padding-top: 40px !important;
+                padding-bottom: 35px !important;
+            }
+            
+            @page {
+                margin: 0.5in;
+                size: letter;
+            }
         }
         
         /* Mobile */
@@ -395,6 +509,16 @@
     </style>
 </head>
 <body>
+    <!-- Print Header (appears on every printed page) -->
+    <div class="print-header">
+        Heritage Property Conditions Assessment — <span id="printPropertyName"></span>
+    </div>
+    
+    <!-- Print Footer (appears on every printed page) -->
+    <div class="print-footer">
+        Assessment Date: <span id="printDate"></span>
+    </div>
+    
     <div class="save-indicator saved">
         <div class="icon">✓</div>
         <div>
@@ -529,48 +653,54 @@
         </div>
         
         <!-- SECTION B: Interior Assessment -->
-        <h2>Section B: Interior Assessment</h2>
-        <div id="roomsContainer"></div>
-        <button class="add-section-btn" onclick="addRoom()">➕ Add Another Room</button>
+        <div class="section-break">
+            <h2>Section B: Interior Assessment</h2>
+            <div id="roomsContainer"></div>
+            <button class="add-section-btn" onclick="addRoom()">➕ Add Another Room</button>
+        </div>
         
         <!-- SECTION C: Façade Assessment -->
-        <h2>Section C: Façade Assessment</h2>
-        <div id="facadesContainer"></div>
-        <button class="add-section-btn" onclick="addFacade()">➕ Add Another Façade</button>
+        <div class="section-break">
+            <h2>Section C: Façade Assessment</h2>
+            <div id="facadesContainer"></div>
+            <button class="add-section-btn" onclick="addFacade()">➕ Add Another Façade</button>
+        </div>
         
         <!-- SECTION D: Water Damage Reporting -->
-        <h2>Section D: Water Damage Reporting</h2>
-        <div class="form-section">
-            <div class="warning-box">
-                <strong>⚠️ IMPORTANT:</strong> Report any new signs of water damage immediately to prevent further deterioration.
-            </div>
-            
-            <div class="form-group">
-                <label>Signs of Active Water Damage Observed?</label>
-                <div class="radio-group">
-                    <div class="radio-item">
-                        <input type="radio" id="waterYes" name="waterDamage" value="yes">
-                        <label for="waterYes">Yes - Immediate Action Required</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="waterNo" name="waterDamage" value="no">
-                        <label for="waterNo">No</label>
+        <div class="section-break">
+            <h2>Section D: Water Damage Reporting</h2>
+            <div class="form-section">
+                <div class="warning-box">
+                    <strong>⚠️ IMPORTANT:</strong> Report any new signs of water damage immediately to prevent further deterioration.
+                </div>
+                
+                <div class="form-group">
+                    <label>Signs of Active Water Damage Observed?</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="waterYes" name="waterDamage" value="yes">
+                            <label for="waterYes">Yes - Immediate Action Required</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="waterNo" name="waterDamage" value="no">
+                            <label for="waterNo">No</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="waterLocation">Location & Description of Water Damage:</label>
-                <textarea id="waterLocation" placeholder="Describe exact location, affected rooms/elements, source if known, extent of damage"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>📷 Water Damage Photos:</label>
-                <div class="photo-upload">
-                    <input type="file" id="waterPhotos" accept="image/*" multiple data-preview="waterPreview">
-                    <button type="button" class="photo-btn" data-input="waterPhotos">📷 Add Photos</button>
+                
+                <div class="form-group">
+                    <label for="waterLocation">Location & Description of Water Damage:</label>
+                    <textarea id="waterLocation" placeholder="Describe exact location, affected rooms/elements, source if known, extent of damage"></textarea>
                 </div>
-                <div id="waterPreview" class="photo-preview"></div>
+                
+                <div class="form-group">
+                    <label>📷 Water Damage Photos:</label>
+                    <div class="photo-upload">
+                        <input type="file" id="waterPhotos" accept="image/*" multiple data-preview="waterPreview">
+                        <button type="button" class="photo-btn" data-input="waterPhotos">📷 Add Photos</button>
+                    </div>
+                    <div id="waterPreview" class="photo-preview"></div>
+                </div>
             </div>
         </div>
         
@@ -630,7 +760,7 @@
         <div class="buttons">
             <button class="btn-success" onclick="exportData()">💾 Export Data</button>
             <button class="btn-secondary" onclick="importData()">📥 Import Data</button>
-            <button class="btn-warning" onclick="window.print()">📄 Save as PDF</button>
+            <button class="btn-warning" onclick="preparePrint()">📄 Save as PDF</button>
             <button class="btn-danger" onclick="clearForm()">🗑️ Clear Form</button>
         </div>
         
@@ -642,6 +772,86 @@
         let facadeCounter = 0;
         let autoSaveTimeout;
         let lastSaveTime = new Date();
+        
+        // Prepare print header/footer before printing
+        function preparePrint() {
+            const propertyName = document.getElementById('propertyName').value || 'Untitled Property';
+            const assessmentDate = document.getElementById('assessmentDate').value || new Date().toISOString().split('T')[0];
+            
+            document.getElementById('printPropertyName').textContent = propertyName;
+            document.getElementById('printDate').textContent = assessmentDate;
+            
+            // Mark empty sections to hide in print
+            markEmptySections();
+            
+            window.print();
+        }
+        
+        // Check if a room section is empty (no name filled in)
+        function isSectionEmpty(section) {
+            const nameInput = section.querySelector('input[id$="_name"]');
+            const notesTextarea = section.querySelector('textarea');
+            const checkedBoxes = section.querySelectorAll('input[type="checkbox"]:checked');
+            const selectedRadios = section.querySelectorAll('input[type="radio"]:checked');
+            const selectedDropdowns = section.querySelectorAll('select');
+            const photos = section.querySelectorAll('.photo-item');
+            
+            // If no name is provided, consider it empty
+            if (!nameInput || !nameInput.value.trim()) {
+                // But check if any other content exists
+                if (notesTextarea && notesTextarea.value.trim()) return false;
+                if (checkedBoxes.length > 0) return false;
+                if (photos.length > 0) return false;
+                
+                // Check if any dropdown has a non-default selection
+                for (let dropdown of selectedDropdowns) {
+                    if (dropdown.value && dropdown.selectedIndex > 0) return false;
+                }
+                
+                return true;
+            }
+            return false;
+        }
+        
+        // Mark empty sections before printing
+        function markEmptySections() {
+            // Check room sections
+            document.querySelectorAll('.room-section').forEach(section => {
+                if (isSectionEmpty(section)) {
+                    section.classList.add('empty-section');
+                } else {
+                    section.classList.remove('empty-section');
+                }
+            });
+            
+            // Check facade sections
+            document.querySelectorAll('.facade-section').forEach(section => {
+                if (isSectionEmpty(section)) {
+                    section.classList.add('empty-section');
+                } else {
+                    section.classList.remove('empty-section');
+                }
+            });
+        }
+        
+        // Also update on beforeprint event
+        window.addEventListener('beforeprint', function() {
+            const propertyName = document.getElementById('propertyName').value || 'Untitled Property';
+            const assessmentDate = document.getElementById('assessmentDate').value || new Date().toISOString().split('T')[0];
+            
+            document.getElementById('printPropertyName').textContent = propertyName;
+            document.getElementById('printDate').textContent = assessmentDate;
+            
+            // Mark empty sections to hide in print
+            markEmptySections();
+        });
+        
+        // Restore sections after print (in case user continues editing)
+        window.addEventListener('afterprint', function() {
+            document.querySelectorAll('.empty-section').forEach(section => {
+                section.classList.remove('empty-section');
+            });
+        });
         
         window.addEventListener('load', function() {
             loadFormData();
