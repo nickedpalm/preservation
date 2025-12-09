@@ -919,6 +919,80 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Deficiencies Observed:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_crack" name="${roomId}_deficiency">
+                            <label for="${roomId}_crack">Cracking</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_stain" name="${roomId}_deficiency">
+                            <label for="${roomId}_stain">Staining</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_water" name="${roomId}_deficiency">
+                            <label for="${roomId}_water">Water Damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_peel" name="${roomId}_deficiency">
+                            <label for="${roomId}_peel">Peeling/Flaking</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_loose" name="${roomId}_deficiency">
+                            <label for="${roomId}_loose">Loose/Detached</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_decay" name="${roomId}_deficiency">
+                            <label for="${roomId}_decay">Decay/Rot</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_corrosion" name="${roomId}_deficiency">
+                            <label for="${roomId}_corrosion">Corrosion</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_missing" name="${roomId}_deficiency">
+                            <label for="${roomId}_missing">Missing Elements</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="${roomId}_urgency">Urgency Rating:</label>
+                    <select id="${roomId}_urgency">
+                        <option value="">Select urgency</option>
+                        <option value="minor">Minor (5-10 years)</option>
+                        <option value="urgent">Urgent (1-5 years)</option>
+                        <option value="critical">Critical (within 1 year)</option>
+                    </select>
+                    <div class="help-text">Based on 10-year look-ahead</div>
+                </div>
+                <div class="form-group">
+                    <label>Required Treatment:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_monitor" name="${roomId}_treatment">
+                            <label for="${roomId}_monitor">Continue Monitoring</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_treat" name="${roomId}_treatment">
+                            <label for="${roomId}_treat">Treatment Required</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${roomId}_maintain" name="${roomId}_treatment">
+                            <label for="${roomId}_maintain">Recurring Maintenance</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="${roomId}_change">Change Since Last Assessment:</label>
+                    <select id="${roomId}_change">
+                        <option value="">Select change status</option>
+                        <option value="no_change">No Change</option>
+                        <option value="improved">Improved</option>
+                        <option value="deteriorated">Deteriorated</option>
+                        <option value="new_damage">New Damage</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="${roomId}_notes">Condition Notes & Deficiencies:</label>
                     <textarea id="${roomId}_notes" placeholder="Describe condition of: walls, floors, ceiling, windows, doors, fixtures, finishes, decorative elements. Note any deficiencies, causes if known, and recommended treatments."></textarea>
                 </div>
@@ -993,6 +1067,80 @@
                         <option value="good">Good</option>
                         <option value="fair">Fair</option>
                         <option value="poor">Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Deficiencies Observed:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_crack" name="${facadeId}_deficiency">
+                            <label for="${facadeId}_crack">Cracking</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_stain" name="${facadeId}_deficiency">
+                            <label for="${facadeId}_stain">Staining</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_water" name="${facadeId}_deficiency">
+                            <label for="${facadeId}_water">Water Damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_spall" name="${facadeId}_deficiency">
+                            <label for="${facadeId}_spall">Spalling</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_efflor" name="${facadeId}_deficiency">
+                            <label for="${facadeId}_efflor">Efflorescence</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_point" name="${facadeId}_deficiency">
+                            <label for="${facadeId}_point">Failed Pointing</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_corrosion" name="${facadeId}_deficiency">
+                            <label for="${facadeId}_corrosion">Corrosion</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_missing" name="${facadeId}_deficiency">
+                            <label for="${facadeId}_missing">Missing Elements</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="${facadeId}_urgency">Urgency Rating:</label>
+                    <select id="${facadeId}_urgency">
+                        <option value="">Select urgency</option>
+                        <option value="minor">Minor (5-10 years)</option>
+                        <option value="urgent">Urgent (1-5 years)</option>
+                        <option value="critical">Critical (within 1 year)</option>
+                    </select>
+                    <div class="help-text">Based on 10-year look-ahead</div>
+                </div>
+                <div class="form-group">
+                    <label>Required Treatment:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_monitor" name="${facadeId}_treatment">
+                            <label for="${facadeId}_monitor">Continue Monitoring</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_treat" name="${facadeId}_treatment">
+                            <label for="${facadeId}_treat">Treatment Required</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="${facadeId}_maintain" name="${facadeId}_treatment">
+                            <label for="${facadeId}_maintain">Recurring Maintenance</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="${facadeId}_change">Change Since Last Assessment:</label>
+                    <select id="${facadeId}_change">
+                        <option value="">Select change status</option>
+                        <option value="no_change">No Change</option>
+                        <option value="improved">Improved</option>
+                        <option value="deteriorated">Deteriorated</option>
+                        <option value="new_damage">New Damage</option>
                     </select>
                 </div>
                 <div class="form-group">
