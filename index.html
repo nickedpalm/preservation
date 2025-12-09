@@ -375,6 +375,12 @@
             .container { box-shadow: none; padding: 20px; max-width: 100%; }
             .buttons, .photo-upload, .photo-item button, .remove-section-btn, .add-section-btn, .save-indicator { display: none !important; }
             
+            /* Hide the auto-save warning box in print */
+            .container > .warning-box { display: none !important; }
+            
+            /* Keep Section D water damage warning visible */
+            .section-break .warning-box { display: block !important; }
+            
             /* Remove borders from form elements in print */
             textarea, input[type="text"], select {
                 border: none !important;
@@ -393,12 +399,6 @@
                 min-height: 40px;
                 border-bottom: 1px solid #ccc !important;
             }
-            
-            /* Hide the auto-save warning box in print (first one only) */
-            .container > p + .warning-box { display: none !important; }
-            
-            /* Keep Section D water damage warning visible */
-            .section-break .warning-box { display: block !important; }
             
             .photo-preview { columns: 2; column-gap: 15px; }
             .photo-item { margin-bottom: 15px; display: inline-block; width: 100%; }
@@ -422,6 +422,11 @@
             /* Page breaks for main sections */
             .section-break {
                 page-break-before: always;
+            }
+            
+            /* Section A should NOT have a page break before it */
+            .section-a-container {
+                page-break-before: auto;
             }
             
             /* Only break BEFORE 2nd+ room/facade, not the first one */
