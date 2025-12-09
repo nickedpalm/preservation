@@ -865,10 +865,37 @@
         });
         
         window.addEventListener('load', function() {
+            // Check if there's saved data to determine how many rooms/facades to create
+            const saved = localStorage.getItem('assessmentForm');
+            let roomsToCreate = 1;
+            let facadesToCreate = 1;
+            
+            if (saved) {
+                try {
+                    const formData = JSON.parse(saved);
+                    roomsToCreate = formData.roomCount || 1;
+                    facadesToCreate = formData.facadeCount || 1;
+                } catch (e) {
+                    console.error('Error parsing saved data', e);
+                }
+            }
+            
+            // Create the correct number of rooms and facades
+            for (let i = 0; i < roomsToCreate; i++) {
+                addRoom();
+            }
+            for (let i = 0; i < facadesToCreate; i++) {
+                addFacade();
+            }
+            
+            // Now load the data into the created fields
             loadFormData();
-            addRoom();
-            addFacade();
-            document.getElementById('assessmentDate').value = new Date().toISOString().split('T')[0];
+            
+            // Set default date if not already set
+            if (!document.getElementById('assessmentDate').value) {
+                document.getElementById('assessmentDate').value = new Date().toISOString().split('T')[0];
+            }
+            
             setupPhotoButtons();
         });
         
@@ -923,11 +950,10 @@
             const saved = localStorage.getItem('assessmentForm');
             if (!saved) return;
             
-            setTimeout(function() {
+            try {
                 const formData = JSON.parse(saved);
-                roomCounter = formData.roomCount || 0;
-                facadeCounter = formData.facadeCount || 0;
                 
+                // Populate form fields
                 Object.keys(formData.data).forEach(function(key) {
                     const el = document.getElementById(key);
                     if (el) {
@@ -939,6 +965,7 @@
                     }
                 });
                 
+                // Load photos
                 Object.keys(formData.data).forEach(function(key) {
                     if (key.endsWith('_src')) {
                         const photoId = key.replace('_src', '');
@@ -949,7 +976,9 @@
                         }
                     }
                 });
-            }, 100);
+            } catch (e) {
+                console.error('Error loading form data', e);
+            }
         }
         
         function exportData() {
