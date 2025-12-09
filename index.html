@@ -405,7 +405,18 @@
                 page-break-before: always;
             }
             
-            .room-section, .facade-section, .summary-section {
+            /* Only break BEFORE 2nd+ room/facade, not the first one */
+            .room-section, .facade-section {
+                page-break-before: auto;
+            }
+            
+            .room-section ~ .room-section,
+            .facade-section ~ .facade-section {
+                page-break-before: always;
+            }
+            
+            /* Section E summary always on new page */
+            .summary-section {
                 page-break-before: always;
             }
             
@@ -949,18 +960,55 @@
                 return;
             }
             
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
             const propertyName = document.getElementById('propertyName')?.value || 'Assessment';
             const date = new Date().toISOString().split('T')[0];
-            a.download = `${propertyName.replace(/[^a-z0-9]/gi, '_')}_${date}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            alert('✅ Data exported successfully!');
+            const filename = `${propertyName.replace(/[^a-z0-9]/gi, '_')}_${date}.json`;
+            
+            // Try modern approach first
+            if (navigator.share && navigator.canShare) {
+                const file = new File([data], filename, { type: 'application/json' });
+                if (navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Assessment Data Export'
+                    }).then(() => {
+                        console.log('Shared successfully');
+                    }).catch((err) => {
+                        console.log('Share failed, falling back', err);
+                        fallbackExport(data, filename);
+                    });
+                    return;
+                }
+            }
+            
+            fallbackExport(data, filename);
+        }
+        
+        function fallbackExport(data, filename) {
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // For iOS Safari, open in new window
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                // Open blob URL in new tab - user can long-press to save
+                const newWindow = window.open(url, '_blank');
+                if (newWindow) {
+                    alert('✅ Data opened in new tab. Long-press and select "Download Linked File" to save.');
+                } else {
+                    // Fallback: show data in textarea for copy
+                    prompt('Copy this data to save:', data);
+                }
+            } else {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('✅ Data exported successfully!');
+            }
         }
         
         function importData() {
