@@ -375,6 +375,14 @@
             .container { box-shadow: none; padding: 20px; max-width: 100%; }
             .buttons, .photo-upload, .photo-item button, .remove-section-btn, .add-section-btn, .save-indicator { display: none !important; }
             
+            /* Remove borders from form elements in print */
+            textarea, input[type="text"], select {
+                border: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                padding-left: 0 !important;
+            }
+            
             /* Hide the auto-save warning box in print (first one only) */
             .container > p + .warning-box { display: none !important; }
             
